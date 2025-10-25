@@ -468,7 +468,7 @@
 
                 <div class="section">
                     <h3>📋 Mis Parcelas</h3>
-                    <div id="listaParcelas"></div>
+                    <div id="listaParcelas">Cargando...</div>
                 </div>
             </div>
 
@@ -524,7 +524,7 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="listaProductos"></tbody>
+                            <tbody id="listaProductos"><tr><td colspan="5">Cargando...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
@@ -538,7 +538,9 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Seleccionar Parcela *</label>
-                                <select id="parcelaSiembra" required onchange="cargarInfoParcelaSiembra()"></select>
+                                <select id="parcelaSiembra" required onchange="cargarInfoParcelaSiembra()">
+                                    <option value="">Cargando...</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Fecha de Siembra *</label>
@@ -666,7 +668,7 @@
 
                 <div class="section">
                     <h3>📋 Historial de Siembras</h3>
-                    <div id="historialSiembras"></div>
+                    <div id="historialSiembras">Cargando...</div>
                 </div>
             </div>
 
@@ -678,7 +680,9 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Seleccionar Parcela *</label>
-                                <select id="parcelaFumigacion" required onchange="cargarInfoParcelaFumigacion()"></select>
+                                <select id="parcelaFumigacion" required onchange="cargarInfoParcelaFumigacion()">
+                                    <option value="">Cargando...</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Fecha de Fumigación *</label>
@@ -694,7 +698,9 @@
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label>Producto</label>
-                                    <select id="productoFumigacion"></select>
+                                    <select id="productoFumigacion">
+                                        <option value="">Cargando...</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
                                     <label>Cantidad por Hectárea</label>
@@ -748,7 +754,7 @@
                             <option value="">Todas las parcelas</option>
                         </select>
                     </div>
-                    <div id="historialFumigaciones"></div>
+                    <div id="historialFumigaciones">Cargando...</div>
                 </div>
             </div>
 
@@ -760,7 +766,9 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Seleccionar Parcela *</label>
-                                <select id="parcelaCosecha" required onchange="cargarInfoParcelaCosecha()"></select>
+                                <select id="parcelaCosecha" required onchange="cargarInfoParcelaCosecha()">
+                                    <option value="">Cargando...</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Fecha de Cosecha *</label>
@@ -863,7 +871,7 @@
 
                 <div class="section">
                     <h3>📋 Historial de Cosechas</h3>
-                    <div id="historialCosechas"></div>
+                    <div id="historialCosechas">Cargando...</div>
                 </div>
             </div>
 
@@ -873,7 +881,9 @@
                     <h3>📊 Reportes Completos por Parcela</h3>
                     <div class="form-group">
                         <label>Seleccionar Parcela</label>
-                        <select id="parcelaReporte" onchange="generarReporte()"></select>
+                        <select id="parcelaReporte" onchange="generarReporte()">
+                            <option value="">Seleccionar parcela</option>
+                        </select>
                     </div>
                     <div id="contenidoReporte"></div>
                 </div>
@@ -884,10 +894,9 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-        // Configuración Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAu8v9vGYDM7IQ9NX4u9JFuTQayn3nUrZY",
             authDomain: "gestion-agricola-7fa6d.firebaseapp.com",
@@ -905,10 +914,11 @@
         let fertilizantesTemp = [];
         let tratamientosTemp = [];
         let productosTemp = [];
+        let parcelasCache = [];
+        let productosCache = [];
 
         document.getElementById('loadingScreen').style.display = 'none';
 
-        // AUTH
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
@@ -961,15 +971,21 @@
         };
 
         async function inicializarApp() {
-            await cargarParcelas();
-            await cargarProductos();
-            await poblarSelects();
-            await cargarHistorialSiembras();
-            await cargarHistorialFumigacion();
-            await cargarHistorialCosechas();
+            try {
+                await Promise.all([
+                    cargarParcelas(),
+                    cargarProductos(),
+                    cargarHistorialSiembras(),
+                    cargarHistorialFumigacion(),
+                    cargarHistorialCosechas()
+                ]);
+                await poblarSelects();
+            } catch (error) {
+                console.error('Error al inicializar:', error);
+                mostrarMensaje('Error al cargar datos: ' + error.message, 'danger');
+            }
         }
 
-        // TABS
         window.cambiarTab = function(event, tabName) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1005,7 +1021,7 @@
                     costoAlquiler,
                     cultivoActual: null,
                     userId: currentUser.uid,
-                    timestamp: serverTimestamp()
+                    createdAt: serverTimestamp()
                 });
                 
                 e.target.reset();
@@ -1023,11 +1039,11 @@
             try {
                 const q = query(
                     collection(db, 'parcelas'),
-                    where('userId', '==', currentUser.uid),
-                    orderBy('timestamp', 'desc')
+                    where('userId', '==', currentUser.uid)
                 );
                 const snapshot = await getDocs(q);
                 
+                parcelasCache = [];
                 const container = document.getElementById('listaParcelas');
                 container.innerHTML = '';
                 
@@ -1038,24 +1054,30 @@
                 
                 for (const docSnap of snapshot.docs) {
                     const parcela = docSnap.data();
+                    parcelasCache.push({ id: docSnap.id, ...parcela });
+                    
                     const card = document.createElement('div');
                     card.className = 'card';
                     
                     let infoAdicional = '';
                     if (parcela.cultivoActual) {
-                        const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
-                        if (siembraDoc.exists()) {
-                            const siembra = siembraDoc.data();
-                            const diasCultivo = calcularDias(siembra.fechaGerminacion);
-                            infoAdicional = `
-                                <div class="info-box">
-                                    <strong>🌱 Cultivo Activo:</strong> ${siembra.cultivo} - ${siembra.variedad}<br>
-                                    <strong>📅 Siembra:</strong> ${formatearFecha(siembra.fecha)}<br>
-                                    <strong>📅 Germinación:</strong> ${formatearFecha(siembra.fechaGerminacion)}<br>
-                                    <strong>⏰ Días del cultivo:</strong> ${diasCultivo} días<br>
-                                    <strong>💰 Costo de siembra:</strong> ${siembra.costoTotal.toFixed(2)}
-                                </div>
-                            `;
+                        try {
+                            const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
+                            if (siembraDoc.exists()) {
+                                const siembra = siembraDoc.data();
+                                const diasCultivo = calcularDias(siembra.fechaGerminacion);
+                                infoAdicional = `
+                                    <div class="info-box">
+                                        <strong>🌱 Cultivo Activo:</strong> ${siembra.cultivo} - ${siembra.variedad}<br>
+                                        <strong>📅 Siembra:</strong> ${formatearFecha(siembra.fecha)}<br>
+                                        <strong>📅 Germinación:</strong> ${formatearFecha(siembra.fechaGerminacion)}<br>
+                                        <strong>⏰ Días del cultivo:</strong> ${diasCultivo} días<br>
+                                        <strong>💰 Costo de siembra:</strong> ${siembra.costoTotal.toFixed(2)}
+                                    </div>
+                                `;
+                            }
+                        } catch (error) {
+                            console.error('Error cargando siembra:', error);
                         }
                     }
                     
@@ -1077,12 +1099,13 @@
                 }
             } catch (error) {
                 console.error('Error al cargar parcelas:', error);
-                mostrarMensaje('❌ Error al cargar parcelas', 'danger');
+                document.getElementById('listaParcelas').innerHTML = '<p style="color: red;">Error al cargar parcelas. Por favor recarga la página.</p>';
+                mostrarMensaje('❌ Error al cargar parcelas: ' + error.message, 'danger');
             }
         }
 
         window.eliminarParcela = async function(id) {
-            if (!confirm('¿Eliminar esta parcela permanentemente? Se eliminarán todos los registros asociados.')) return;
+            if (!confirm('¿Eliminar esta parcela permanentemente?')) return;
             
             try {
                 await deleteDoc(doc(db, 'parcelas', id));
@@ -1116,7 +1139,7 @@
                     precio,
                     unidad,
                     userId: currentUser.uid,
-                    timestamp: serverTimestamp()
+                    createdAt: serverTimestamp()
                 });
                 
                 e.target.reset();
@@ -1137,6 +1160,7 @@
                 );
                 const snapshot = await getDocs(q);
                 
+                productosCache = [];
                 const tbody = document.getElementById('listaProductos');
                 tbody.innerHTML = '';
                 
@@ -1147,6 +1171,8 @@
                 
                 snapshot.forEach(docSnap => {
                     const prod = docSnap.data();
+                    productosCache.push({ id: docSnap.id, ...prod });
+                    
                     const row = tbody.insertRow();
                     row.innerHTML = `
                         <td>${prod.nombre}</td>
@@ -1160,6 +1186,7 @@
                 });
             } catch (error) {
                 console.error('Error:', error);
+                document.getElementById('listaProductos').innerHTML = '<tr><td colspan="5" style="color: red;">Error al cargar productos</td></tr>';
             }
         }
 
@@ -1177,7 +1204,7 @@
         };
 
         // SIEMBRA
-        window.cargarInfoParcelaSiembra = async function() {
+        window.cargarInfoParcelaSiembra = function() {
             calcularCostosSiembra();
         };
 
@@ -1273,51 +1300,45 @@
             const parcelaId = document.getElementById('parcelaSiembra').value;
             if (!parcelaId) return;
             
-            getDoc(doc(db, 'parcelas', parcelaId)).then(docSnap => {
-                if (!docSnap.exists()) return;
-                
-                const parcela = docSnap.data();
-                const hectareas = parcela.hectareas;
-                
-                // Semilla
-                const kgSemilla = parseFloat(document.getElementById('kgPorHaSemilla').value) || 0;
-                const precioSemilla = parseFloat(document.getElementById('precioKgSemilla').value) || 0;
-                const costoSemillaPorHa = kgSemilla * precioSemilla;
-                const costoSemillaTotal = costoSemillaPorHa * hectareas;
-                
-                // Fertilizantes
-                let costoFertPorHa = 0;
-                fertilizantesTemp.forEach(f => {
-                    costoFertPorHa += f.kgPorHa * f.precio;
-                });
-                const costoFertTotal = costoFertPorHa * hectareas;
-                
-                // Tratamientos
-                let costoTratPorHa = 0;
-                tratamientosTemp.forEach(t => {
-                    costoTratPorHa += t.costo;
-                });
-                const costoTratTotal = costoTratPorHa * hectareas;
-                
-                // Alquiler
-                const costoAlquilerTotal = parcela.alquilada ? parcela.costoAlquiler * hectareas : 0;
-                
-                // Totales
-                const costoPorHa = costoSemillaPorHa + costoFertPorHa + costoTratPorHa + (parcela.alquilada ? parcela.costoAlquiler : 0);
-                const costoTotal = costoSemillaTotal + costoFertTotal + costoTratTotal + costoAlquilerTotal;
-                
-                document.getElementById('costoSemillaTotal').textContent = `${costoSemillaTotal.toFixed(2)}`;
-                document.getElementById('costoFertilizantesTotal').textContent = `${costoFertTotal.toFixed(2)}`;
-                document.getElementById('costoTratamientosTotal').textContent = `${costoTratTotal.toFixed(2)}`;
-                document.getElementById('costoAlquilerTotal').textContent = `${costoAlquilerTotal.toFixed(2)}`;
-                document.getElementById('costoPorHaTotal').textContent = `${costoPorHa.toFixed(2)}`;
-                document.getElementById('costoTotalSiembra').textContent = `${costoTotal.toFixed(2)}`;
+            const parcela = parcelasCache.find(p => p.id === parcelaId);
+            if (!parcela) return;
+            
+            const hectareas = parcela.hectareas;
+            
+            const kgSemilla = parseFloat(document.getElementById('kgPorHaSemilla').value) || 0;
+            const precioSemilla = parseFloat(document.getElementById('precioKgSemilla').value) || 0;
+            const costoSemillaPorHa = kgSemilla * precioSemilla;
+            const costoSemillaTotal = costoSemillaPorHa * hectareas;
+            
+            let costoFertPorHa = 0;
+            fertilizantesTemp.forEach(f => {
+                costoFertPorHa += f.kgPorHa * f.precio;
             });
+            const costoFertTotal = costoFertPorHa * hectareas;
+            
+            let costoTratPorHa = 0;
+            tratamientosTemp.forEach(t => {
+                costoTratPorHa += t.costo;
+            });
+            const costoTratTotal = costoTratPorHa * hectareas;
+            
+            const costoAlquilerTotal = parcela.alquilada ? parcela.costoAlquiler * hectareas : 0;
+            
+            const costoPorHa = costoSemillaPorHa + costoFertPorHa + costoTratPorHa + (parcela.alquilada ? parcela.costoAlquiler : 0);
+            const costoTotal = costoSemillaTotal + costoFertTotal + costoTratTotal + costoAlquilerTotal;
+            
+            document.getElementById('costoSemillaTotal').textContent = `${costoSemillaTotal.toFixed(2)}`;
+            document.getElementById('costoFertilizantesTotal').textContent = `${costoFertTotal.toFixed(2)}`;
+            document.getElementById('costoTratamientosTotal').textContent = `${costoTratTotal.toFixed(2)}`;
+            document.getElementById('costoAlquilerTotal').textContent = `${costoAlquilerTotal.toFixed(2)}`;
+            document.getElementById('costoPorHaTotal').textContent = `${costoPorHa.toFixed(2)}`;
+            document.getElementById('costoTotalSiembra').textContent = `${costoTotal.toFixed(2)}`;
         }
 
-        // Listeners para recalcular
-        document.getElementById('kgPorHaSemilla')?.addEventListener('input', calcularCostosSiembra);
-        document.getElementById('precioKgSemilla')?.addEventListener('input', calcularCostosSiembra);
+        if (document.getElementById('kgPorHaSemilla')) {
+            document.getElementById('kgPorHaSemilla').addEventListener('input', calcularCostosSiembra);
+            document.getElementById('precioKgSemilla').addEventListener('input', calcularCostosSiembra);
+        }
 
         window.registrarSiembra = async function(e) {
             e.preventDefault();
@@ -1335,22 +1356,19 @@
             }
             
             try {
-                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
-                if (!parcelaDoc.exists()) {
+                const parcela = parcelasCache.find(p => p.id === parcelaId);
+                if (!parcela) {
                     mostrarMensaje('Parcela no encontrada', 'danger');
                     return;
                 }
                 
-                const parcela = parcelaDoc.data();
                 const hectareas = parcela.hectareas;
                 
-                // Calcular fecha de germinación
-                const fechaSiembra = new Date(fecha);
+                const fechaSiembra = new Date(fecha + 'T00:00:00');
                 const fechaGerm = new Date(fechaSiembra);
                 fechaGerm.setDate(fechaGerm.getDate() + diasGerminacion);
                 const fechaGerminacion = fechaGerm.toISOString().split('T')[0];
                 
-                // Semilla
                 const kgSemilla = parseFloat(document.getElementById('kgPorHaSemilla').value) || 0;
                 const precioSemilla = parseFloat(document.getElementById('precioKgSemilla').value) || 0;
                 const semilla = {
@@ -1361,7 +1379,6 @@
                     costoTotal: kgSemilla * precioSemilla * hectareas
                 };
                 
-                // Cálculos finales
                 let costoFertTotal = 0;
                 fertilizantesTemp.forEach(f => {
                     costoFertTotal += f.kgPorHa * f.precio * hectareas;
@@ -1393,15 +1410,13 @@
                     costoTotal,
                     observaciones,
                     userId: currentUser.uid,
-                    timestamp: serverTimestamp()
+                    createdAt: serverTimestamp()
                 });
                 
-                // Actualizar parcela con cultivo activo
                 await updateDoc(doc(db, 'parcelas', parcelaId), {
                     cultivoActual: siembraDoc.id
                 });
                 
-                // Limpiar formulario
                 e.target.reset();
                 fertilizantesTemp = [];
                 tratamientosTemp = [];
@@ -1428,8 +1443,7 @@
             try {
                 const q = query(
                     collection(db, 'siembras'),
-                    where('userId', '==', currentUser.uid),
-                    orderBy('timestamp', 'desc')
+                    where('userId', '==', currentUser.uid)
                 );
                 const snapshot = await getDocs(q);
                 
@@ -1493,6 +1507,7 @@
                 });
             } catch (error) {
                 console.error('Error:', error);
+                document.getElementById('historialSiembras').innerHTML = '<p style="color: red;">Error al cargar siembras</p>';
             }
         }
 
@@ -1507,10 +1522,8 @@
             }
             
             try {
-                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
-                if (!parcelaDoc.exists()) return;
-                
-                const parcela = parcelaDoc.data();
+                const parcela = parcelasCache.find(p => p.id === parcelaId);
+                if (!parcela) return;
                 
                 if (parcela.cultivoActual) {
                     const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
@@ -1518,18 +1531,18 @@
                         const siembra = siembraDoc.data();
                         const diasCultivo = calcularDias(siembra.fechaGerminacion);
                         
-                        // Buscar última fumigación
                         const qFum = query(
                             collection(db, 'fumigaciones'),
                             where('parcelaId', '==', parcelaId),
-                            orderBy('fecha', 'desc')
+                            orderBy('createdAt', 'desc'),
+                            limit(1)
                         );
                         const fumSnapshot = await getDocs(qFum);
-                        let diasDesdeUltima = 'N/A';
+                        let diasDesdeUltima = 'Primera fumigación';
                         
                         if (!fumSnapshot.empty) {
                             const ultimaFum = fumSnapshot.docs[0].data();
-                            diasDesdeUltima = calcularDias(ultimaFum.fecha);
+                            diasDesdeUltima = calcularDias(ultimaFum.fecha) + ' días';
                         }
                         
                         infoDiv.innerHTML = `
@@ -1537,7 +1550,7 @@
                             <strong>📏 Hectáreas:</strong> ${parcela.hectareas} ha<br>
                             <strong>📅 Germinación:</strong> ${formatearFecha(siembra.fechaGerminacion)}<br>
                             <strong>⏰ Días del cultivo:</strong> ${diasCultivo} días<br>
-                            <strong>🚜 Días desde última fumigación:</strong> ${diasDesdeUltima} días
+                            <strong>🚜 Última fumigación:</strong> ${diasDesdeUltima}
                         `;
                         infoDiv.style.display = 'block';
                     }
@@ -1592,8 +1605,10 @@
             
             if (!parcelaId) return;
             
-            const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
-            const hectareas = parcelaDoc.exists() ? parcelaDoc.data().hectareas : 0;
+            const parcela = parcelasCache.find(p => p.id === parcelaId);
+            if (!parcela) return;
+            
+            const hectareas = parcela.hectareas;
             
             let html = '';
             
@@ -1626,10 +1641,10 @@
             const parcelaId = document.getElementById('parcelaFumigacion').value;
             if (!parcelaId) return;
             
-            const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
-            if (!parcelaDoc.exists()) return;
+            const parcela = parcelasCache.find(p => p.id === parcelaId);
+            if (!parcela) return;
             
-            const hectareas = parcelaDoc.data().hectareas;
+            const hectareas = parcela.hectareas;
             const costoPersonal = parseFloat(document.getElementById('costoPersonalFum').value) || 0;
             
             let costoProductos = 0;
@@ -1647,7 +1662,9 @@
             document.getElementById('costoTotalFum').textContent = `${costoTotal.toFixed(2)}`;
         }
 
-        document.getElementById('costoPersonalFum')?.addEventListener('input', calcularCostosFumigacion);
+        if (document.getElementById('costoPersonalFum')) {
+            document.getElementById('costoPersonalFum').addEventListener('input', calcularCostosFumigacion);
+        }
 
         window.registrarFumigacion = async function(e) {
             e.preventDefault();
@@ -1668,15 +1685,8 @@
             }
             
             try {
-                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
-                if (!parcelaDoc.exists()) {
-                    mostrarMensaje('Parcela no encontrada', 'danger');
-                    return;
-                }
-                
-                const parcela = parcelaDoc.data();
-                
-                if (!parcela.cultivoActual) {
+                const parcela = parcelasCache.find(p => p.id === parcelaId);
+                if (!parcela || !parcela.cultivoActual) {
                     mostrarMensaje('La parcela no tiene un cultivo activo', 'danger');
                     return;
                 }
@@ -1690,11 +1700,11 @@
                 const siembra = siembraDoc.data();
                 const diasCultivo = calcularDiasEntre(siembra.fechaGerminacion, fecha);
                 
-                // Días desde última fumigación
                 const qFum = query(
                     collection(db, 'fumigaciones'),
                     where('parcelaId', '==', parcelaId),
-                    orderBy('fecha', 'desc')
+                    orderBy('createdAt', 'desc'),
+                    limit(1)
                 );
                 const fumSnapshot = await getDocs(qFum);
                 let diasDesdeUltima = 0;
@@ -1704,7 +1714,6 @@
                     diasDesdeUltima = calcularDiasEntre(ultimaFum.fecha, fecha);
                 }
                 
-                // Calcular costos
                 let costoProductos = 0;
                 productosTemp.forEach(prod => {
                     const cantTotal = prod.cantidad * parcela.hectareas;
@@ -1731,10 +1740,9 @@
                     costoTotal,
                     observaciones,
                     userId: currentUser.uid,
-                    timestamp: serverTimestamp()
+                    createdAt: serverTimestamp()
                 });
                 
-                // Limpiar
                 e.target.reset();
                 productosTemp = [];
                 document.getElementById('productosAplicados').innerHTML = '';
@@ -1762,14 +1770,12 @@
                     q = query(
                         collection(db, 'fumigaciones'),
                         where('userId', '==', currentUser.uid),
-                        where('parcelaId', '==', filtroParcelaId),
-                        orderBy('fecha', 'desc')
+                        where('parcelaId', '==', filtroParcelaId)
                     );
                 } else {
                     q = query(
                         collection(db, 'fumigaciones'),
-                        where('userId', '==', currentUser.uid),
-                        orderBy('fecha', 'desc')
+                        where('userId', '==', currentUser.uid)
                     );
                 }
                 
@@ -1828,6 +1834,7 @@
                 });
             } catch (error) {
                 console.error('Error:', error);
+                document.getElementById('historialFumigaciones').innerHTML = '<p style="color: red;">Error al cargar fumigaciones</p>';
             }
         };
 
@@ -1854,10 +1861,8 @@
             }
             
             try {
-                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
-                if (!parcelaDoc.exists()) return;
-                
-                const parcela = parcelaDoc.data();
+                const parcela = parcelasCache.find(p => p.id === parcelaId);
+                if (!parcela) return;
                 
                 if (parcela.cultivoActual) {
                     const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
@@ -1889,10 +1894,9 @@
             const parcelaId = document.getElementById('parcelaCosecha').value;
             if (!parcelaId) return;
             
-            const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
-            if (!parcelaDoc.exists() || !parcelaDoc.data().cultivoActual) return;
+            const parcela = parcelasCache.find(p => p.id === parcelaId);
+            if (!parcela || !parcela.cultivoActual) return;
             
-            const parcela = parcelaDoc.data();
             const hectareas = parcela.hectareas;
             
             const kgPorHa = parseFloat(document.getElementById('kgPorHaCosecha').value) || 0;
@@ -1913,38 +1917,42 @@
             document.getElementById('toneladasNetas').value = toneladas.toFixed(2);
             document.getElementById('ingresoBruto').value = ingresoBruto.toFixed(2);
             
-            // Obtener costos de siembra
-            const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
-            const costoSiembra = siembraDoc.exists() ? siembraDoc.data().costoTotal : 0;
-            
-            // Obtener costos de fumigaciones
-            const qFum = query(
-                collection(db, 'fumigaciones'),
-                where('parcelaId', '==', parcelaId),
-                where('siembraId', '==', parcela.cultivoActual)
-            );
-            const fumSnapshot = await getDocs(qFum);
-            let costoFumigaciones = 0;
-            fumSnapshot.forEach(doc => {
-                costoFumigaciones += doc.data().costoTotal;
-            });
-            
-            const ganancia = ingresoBruto - costoSiembra - costoFumigaciones - costoFlete - otrosCostos;
-            
-            document.getElementById('displayIngresoBruto').textContent = `${ingresoBruto.toFixed(2)}`;
-            document.getElementById('displayCostoSiembra').textContent = `${costoSiembra.toFixed(2)}`;
-            document.getElementById('displayCostoFumigaciones').textContent = `${costoFumigaciones.toFixed(2)}`;
-            document.getElementById('displayCostoFlete').textContent = `${costoFlete.toFixed(2)}`;
-            document.getElementById('displayOtrosCostos').textContent = `${otrosCostos.toFixed(2)}`;
-            document.getElementById('displayGanancia').textContent = `${ganancia.toFixed(2)}`;
-            document.getElementById('displayGanancia').style.color = ganancia >= 0 ? '#fff' : '#ff4444';
+            try {
+                const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
+                const costoSiembra = siembraDoc.exists() ? siembraDoc.data().costoTotal : 0;
+                
+                const qFum = query(
+                    collection(db, 'fumigaciones'),
+                    where('parcelaId', '==', parcelaId),
+                    where('siembraId', '==', parcela.cultivoActual)
+                );
+                const fumSnapshot = await getDocs(qFum);
+                let costoFumigaciones = 0;
+                fumSnapshot.forEach(doc => {
+                    costoFumigaciones += doc.data().costoTotal;
+                });
+                
+                const ganancia = ingresoBruto - costoSiembra - costoFumigaciones - costoFlete - otrosCostos;
+                
+                document.getElementById('displayIngresoBruto').textContent = `${ingresoBruto.toFixed(2)}`;
+                document.getElementById('displayCostoSiembra').textContent = `${costoSiembra.toFixed(2)}`;
+                document.getElementById('displayCostoFumigaciones').textContent = `${costoFumigaciones.toFixed(2)}`;
+                document.getElementById('displayCostoFlete').textContent = `${costoFlete.toFixed(2)}`;
+                document.getElementById('displayOtrosCostos').textContent = `${otrosCostos.toFixed(2)}`;
+                document.getElementById('displayGanancia').textContent = `${ganancia.toFixed(2)}`;
+                document.getElementById('displayGanancia').style.color = ganancia >= 0 ? '#fff' : '#ff4444';
+            } catch (error) {
+                console.error('Error:', error);
+            }
         };
 
-        document.getElementById('kgPorHaCosecha')?.addEventListener('input', calcularCosecha);
-        document.getElementById('descuentoSilo')?.addEventListener('input', calcularCosecha);
-        document.getElementById('precioTonelada')?.addEventListener('input', calcularCosecha);
-        document.getElementById('costoFlete')?.addEventListener('input', calcularCosecha);
-        document.getElementById('otrosCostosCosecha')?.addEventListener('input', calcularCosecha);
+        if (document.getElementById('kgPorHaCosecha')) {
+            document.getElementById('kgPorHaCosecha').addEventListener('input', calcularCosecha);
+            document.getElementById('descuentoSilo').addEventListener('input', calcularCosecha);
+            document.getElementById('precioTonelada').addEventListener('input', calcularCosecha);
+            document.getElementById('costoFlete').addEventListener('input', calcularCosecha);
+            document.getElementById('otrosCostosCosecha').addEventListener('input', calcularCosecha);
+        }
 
         window.registrarCosecha = async function(e) {
             e.preventDefault();
@@ -1967,15 +1975,8 @@
             }
             
             try {
-                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
-                if (!parcelaDoc.exists()) {
-                    mostrarMensaje('Parcela no encontrada', 'danger');
-                    return;
-                }
-                
-                const parcela = parcelaDoc.data();
-                
-                if (!parcela.cultivoActual) {
+                const parcela = parcelasCache.find(p => p.id === parcelaId);
+                if (!parcela || !parcela.cultivoActual) {
                     mostrarMensaje('La parcela no tiene un cultivo activo', 'danger');
                     return;
                 }
@@ -1998,7 +1999,6 @@
                 const costoFlete = parseFloat(document.getElementById('costoFlete').value) || 0;
                 const otrosCostos = parseFloat(document.getElementById('otrosCostosCosecha').value) || 0;
                 
-                // Costos acumulados
                 const costoSiembra = siembra.costoTotal;
                 
                 const qFum = query(
@@ -2038,15 +2038,13 @@
                     ganancia,
                     observaciones,
                     userId: currentUser.uid,
-                    timestamp: serverTimestamp()
+                    createdAt: serverTimestamp()
                 });
                 
-                // Cerrar cultivo de la parcela
                 await updateDoc(doc(db, 'parcelas', parcelaId), {
                     cultivoActual: null
                 });
                 
-                // Limpiar formulario
                 e.target.reset();
                 document.getElementById('infoParcelaCosecha').style.display = 'none';
                 document.getElementById('kgTotalesCosecha').value = '';
@@ -2074,8 +2072,7 @@
             try {
                 const q = query(
                     collection(db, 'cosechas'),
-                    where('userId', '==', currentUser.uid),
-                    orderBy('timestamp', 'desc')
+                    where('userId', '==', currentUser.uid)
                 );
                 const snapshot = await getDocs(q);
                 
@@ -2152,6 +2149,7 @@
                 });
             } catch (error) {
                 console.error('Error:', error);
+                document.getElementById('historialCosechas').innerHTML = '<p style="color: red;">Error al cargar cosechas</p>';
             }
         }
 
@@ -2166,10 +2164,8 @@
             }
             
             try {
-                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
-                if (!parcelaDoc.exists()) return;
-                
-                const parcela = parcelaDoc.data();
+                const parcela = parcelasCache.find(p => p.id === parcelaId);
+                if (!parcela) return;
                 
                 let html = `
                     <div class="card">
@@ -2178,7 +2174,6 @@
                         ${parcela.alquilada ? `<p><strong>💰 Alquiler:</strong> ${parcela.costoAlquiler}/ha por ciclo</p>` : '<p><strong>✅ Tierra Propia</strong></p>'}
                 `;
                 
-                // Cultivo actual
                 if (parcela.cultivoActual) {
                     const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
                     if (siembraDoc.exists()) {
@@ -2196,12 +2191,10 @@
                             </div>
                         `;
                         
-                        // Fumigaciones del cultivo actual
                         const qFumActual = query(
                             collection(db, 'fumigaciones'),
                             where('parcelaId', '==', parcelaId),
-                            where('siembraId', '==', parcela.cultivoActual),
-                            orderBy('fecha', 'desc')
+                            where('siembraId', '==', parcela.cultivoActual)
                         );
                         const fumActualSnapshot = await getDocs(qFumActual);
                         
@@ -2235,11 +2228,9 @@
                 
                 html += '</div>';
                 
-                // Historial de cosechas
                 const qCosechas = query(
                     collection(db, 'cosechas'),
-                    where('parcelaId', '==', parcelaId),
-                    orderBy('timestamp', 'desc')
+                    where('parcelaId', '==', parcelaId)
                 );
                 const cosechasSnapshot = await getDocs(qCosechas);
                 
@@ -2313,73 +2304,51 @@
         // POBLAR SELECTS
         async function poblarSelects() {
             try {
-                const parcelasSnapshot = await getDocs(query(
-                    collection(db, 'parcelas'),
-                    where('userId', '==', currentUser.uid)
-                ));
-                
-                const productosSnapshot = await getDocs(query(
-                    collection(db, 'productos'),
-                    where('userId', '==', currentUser.uid)
-                ));
-                
-                // Parcelas para siembra
                 const parcelaSiembraSelect = document.getElementById('parcelaSiembra');
                 parcelaSiembraSelect.innerHTML = '<option value="">Seleccionar parcela</option>';
                 
-                parcelasSnapshot.forEach(docSnap => {
-                    const p = docSnap.data();
+                parcelasCache.forEach(p => {
                     const disabled = p.cultivoActual ? ' (tiene cultivo activo)' : '';
-                    parcelaSiembraSelect.innerHTML += `<option value="${docSnap.id}" ${p.cultivoActual ? 'disabled' : ''}>${p.nombre} (${p.hectareas} ha)${disabled}</option>`;
+                    parcelaSiembraSelect.innerHTML += `<option value="${p.id}" ${p.cultivoActual ? 'disabled' : ''}>${p.nombre} (${p.hectareas} ha)${disabled}</option>`;
                 });
                 
-                // Parcelas para fumigación (solo con cultivo activo)
                 const parcelaFumSelect = document.getElementById('parcelaFumigacion');
                 parcelaFumSelect.innerHTML = '<option value="">Seleccionar parcela</option>';
                 
-                parcelasSnapshot.forEach(docSnap => {
-                    const p = docSnap.data();
+                parcelasCache.forEach(p => {
                     if (p.cultivoActual) {
-                        parcelaFumSelect.innerHTML += `<option value="${docSnap.id}">${p.nombre} (${p.hectareas} ha)</option>`;
+                        parcelaFumSelect.innerHTML += `<option value="${p.id}">${p.nombre} (${p.hectareas} ha)</option>`;
                     }
                 });
                 
-                // Parcelas para cosecha (solo con cultivo activo)
                 const parcelaCosechaSelect = document.getElementById('parcelaCosecha');
                 parcelaCosechaSelect.innerHTML = '<option value="">Seleccionar parcela</option>';
                 
-                parcelasSnapshot.forEach(docSnap => {
-                    const p = docSnap.data();
+                parcelasCache.forEach(p => {
                     if (p.cultivoActual) {
-                        parcelaCosechaSelect.innerHTML += `<option value="${docSnap.id}">${p.nombre} (${p.hectareas} ha)</option>`;
+                        parcelaCosechaSelect.innerHTML += `<option value="${p.id}">${p.nombre} (${p.hectareas} ha)</option>`;
                     }
                 });
                 
-                // Filtro parcela fumigación
                 const filtroFumSelect = document.getElementById('filtroParcelaFumigacion');
                 filtroFumSelect.innerHTML = '<option value="">Todas las parcelas</option>';
                 
-                parcelasSnapshot.forEach(docSnap => {
-                    const p = docSnap.data();
-                    filtroFumSelect.innerHTML += `<option value="${docSnap.id}">${p.nombre}</option>`;
+                parcelasCache.forEach(p => {
+                    filtroFumSelect.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
                 });
                 
-                // Parcelas para reportes
                 const reporteSelect = document.getElementById('parcelaReporte');
                 reporteSelect.innerHTML = '<option value="">Seleccionar parcela</option>';
                 
-                parcelasSnapshot.forEach(docSnap => {
-                    const p = docSnap.data();
-                    reporteSelect.innerHTML += `<option value="${docSnap.id}">${p.nombre}</option>`;
+                parcelasCache.forEach(p => {
+                    reporteSelect.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
                 });
                 
-                // Productos para fumigación
                 const productoFumSelect = document.getElementById('productoFumigacion');
                 productoFumSelect.innerHTML = '<option value="">Seleccionar producto</option>';
                 
-                productosSnapshot.forEach(docSnap => {
-                    const p = docSnap.data();
-                    productoFumSelect.innerHTML += `<option value="${docSnap.id}" data-precio="${p.precio}" data-unidad="${p.unidad}">${p.nombre} - ${p.precio}/${p.unidad}</option>`;
+                productosCache.forEach(p => {
+                    productoFumSelect.innerHTML += `<option value="${p.id}" data-precio="${p.precio}" data-unidad="${p.unidad}">${p.nombre} - ${p.precio}/${p.unidad}</option>`;
                 });
             } catch (error) {
                 console.error('Error al poblar selects:', error);
@@ -2418,6 +2387,8 @@
             
             const container = document.querySelector('.container');
             container.insertBefore(alerta, container.firstChild);
+            
+            window.scrollTo(0, 0);
             
             setTimeout(() => alerta.remove(), 5000);
         }
