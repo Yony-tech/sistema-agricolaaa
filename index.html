@@ -1,0 +1,2426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Agrícola Profesional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a20 0%, #2d5a2f 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .header h1 {
+            color: #1e3a20;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .user-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+            background: #f0f7f0;
+            border-radius: 8px;
+        }
+        
+        .sync-status {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding: 5px;
+        }
+        
+        .tab-btn {
+            background: white;
+            border: 2px solid #1e3a20;
+            padding: 10px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1e3a20;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: #1e3a20;
+            color: white;
+        }
+        
+        .tab-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border-left: 4px solid #1e3a20;
+        }
+        
+        .section h3 {
+            color: #1e3a20;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1e3a20;
+            font-size: 0.95rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2d5a2f;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #2d5a2f, #1e3a20);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #218838);
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #1e3a20;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .card-active {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .info-box strong {
+            color: #1565C0;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .producto-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .login-screen {
+            max-width: 420px;
+            margin: 80px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .login-screen h2 {
+            text-align: center;
+            color: #1e3a20;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        
+        .costo-box {
+            background: linear-gradient(135deg, #2d5a2f, #1e3a20);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .costo-box h4 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .costo-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .costo-total {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: #000;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .subsection {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+        }
+        
+        .subsection h4 {
+            color: #1e3a20;
+            margin-bottom: 10px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+        
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingScreen" class="loading">
+        <h2>🌾 Cargando Sistema Agrícola...</h2>
+        <p>Por favor espera un momento</p>
+    </div>
+
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="login-screen" style="display: none;">
+        <h2>🌾 Sistema Agrícola</h2>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="loginEmail" placeholder="tucorreo@ejemplo.com">
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="loginPassword" placeholder="••••••••">
+        </div>
+        <button class="btn" onclick="loginUser()" style="width: 100%">Iniciar Sesión</button>
+        <button class="btn btn-warning" onclick="registerUser()" style="width: 100%; margin-top: 10px">Registrarse</button>
+        <div id="loginError" class="alert alert-danger" style="display: none; margin-top: 15px;"></div>
+    </div>
+
+    <!-- Aplicación Principal -->
+    <div id="mainApp" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <h1>🌾 Sistema de Gestión Agrícola Profesional</h1>
+                <div class="user-bar">
+                    <div>
+                        <strong>👤 Usuario:</strong> <span id="currentUser"></span>
+                    </div>
+                    <div class="sync-status" id="syncStatus">
+                        🟢 Conectado y Sincronizado
+                    </div>
+                    <button class="btn btn-danger" onclick="logoutUser()" style="padding: 8px 20px;">Cerrar Sesión</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="cambiarTab(event, 'parcelas')">📍 Parcelas</button>
+                <button class="tab-btn" onclick="cambiarTab(event, 'productos')">💊 Productos</button>
+                <button class="tab-btn" onclick="cambiarTab(event, 'siembra')">🌱 Siembra</button>
+                <button class="tab-btn" onclick="cambiarTab(event, 'fumigacion')">🚜 Fumigación</button>
+                <button class="tab-btn" onclick="cambiarTab(event, 'cosecha')">🌾 Cosecha</button>
+                <button class="tab-btn" onclick="cambiarTab(event, 'reportes')">📊 Reportes</button>
+            </div>
+
+            <!-- TAB PARCELAS -->
+            <div id="parcelas" class="tab-content active">
+                <div class="section">
+                    <h3>➕ Nueva Parcela</h3>
+                    <form onsubmit="crearParcela(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Nombre de la Parcela *</label>
+                                <input type="text" id="nombreParcela" required placeholder="Ej: Lote Norte">
+                            </div>
+                            <div class="form-group">
+                                <label>Hectáreas *</label>
+                                <input type="number" id="hectareasParcela" step="0.01" required placeholder="Ej: 25.5">
+                            </div>
+                            <div class="form-group">
+                                <label>¿Está alquilada?</label>
+                                <select id="alquiladaParcela" onchange="toggleAlquiler()">
+                                    <option value="false">No</option>
+                                    <option value="true">Sí</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="costoAlquilerGroup" style="display: none;">
+                                <label>Costo de Alquiler ($/ha por ciclo)</label>
+                                <input type="number" id="costoAlquilerParcela" step="0.01" placeholder="Ej: 250.00">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">Crear Parcela</button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h3>📋 Mis Parcelas</h3>
+                    <div id="listaParcelas"></div>
+                </div>
+            </div>
+
+            <!-- TAB PRODUCTOS -->
+            <div id="productos" class="tab-content">
+                <div class="section">
+                    <h3>➕ Nuevo Producto</h3>
+                    <form onsubmit="crearProducto(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Nombre del Producto *</label>
+                                <input type="text" id="nombreProducto" required placeholder="Ej: Glifosato 48%">
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo de Producto *</label>
+                                <select id="tipoProducto" required>
+                                    <option value="herbicida">Herbicida</option>
+                                    <option value="insecticida">Insecticida</option>
+                                    <option value="fungicida">Fungicida</option>
+                                    <option value="fertilizante">Fertilizante</option>
+                                    <option value="tratamiento">Tratamiento de semilla</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Precio por Unidad *</label>
+                                <input type="number" id="precioProducto" step="0.01" required placeholder="Ej: 15.50">
+                            </div>
+                            <div class="form-group">
+                                <label>Unidad *</label>
+                                <select id="unidadProducto" required>
+                                    <option value="L">Litros</option>
+                                    <option value="kg">Kilogramos</option>
+                                    <option value="ml">Mililitros</option>
+                                    <option value="gr">Gramos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">Agregar Producto</button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h3>📋 Mis Productos</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Tipo</th>
+                                    <th>Precio</th>
+                                    <th>Unidad</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listaProductos"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB SIEMBRA -->
+            <div id="siembra" class="tab-content">
+                <div class="section">
+                    <h3>🌱 Registrar Nueva Siembra</h3>
+                    <form onsubmit="registrarSiembra(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Seleccionar Parcela *</label>
+                                <select id="parcelaSiembra" required onchange="cargarInfoParcelaSiembra()"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Siembra *</label>
+                                <input type="date" id="fechaSiembra" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Cultivo *</label>
+                                <input type="text" id="cultivoSiembra" required placeholder="Ej: Soja">
+                            </div>
+                            <div class="form-group">
+                                <label>Variedad *</label>
+                                <input type="text" id="variedadSiembra" required placeholder="Ej: NS 5959">
+                            </div>
+                            <div class="form-group">
+                                <label>Días para Germinación *</label>
+                                <input type="number" id="diasGerminacion" required placeholder="Ej: 7" value="7">
+                            </div>
+                        </div>
+
+                        <!-- SEMILLA -->
+                        <div class="subsection">
+                            <h4>🌾 Información de Semilla</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Tipo de Semilla</label>
+                                    <input type="text" id="tipoSemilla" placeholder="Ej: Soja RR">
+                                </div>
+                                <div class="form-group">
+                                    <label>Marca</label>
+                                    <input type="text" id="marcaSemilla" placeholder="Ej: Nidera">
+                                </div>
+                                <div class="form-group">
+                                    <label>Kg por Hectárea</label>
+                                    <input type="number" id="kgPorHaSemilla" step="0.01" placeholder="Ej: 60">
+                                </div>
+                                <div class="form-group">
+                                    <label>Precio por Kg ($)</label>
+                                    <input type="number" id="precioKgSemilla" step="0.01" placeholder="Ej: 2.50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FERTILIZANTES -->
+                        <div class="subsection">
+                            <h4>💊 Fertilizantes Base</h4>
+                            <div id="fertilizantesList"></div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Nombre del Fertilizante</label>
+                                    <input type="text" id="nombreFertilizante" placeholder="Ej: Fosfato Diamónico">
+                                </div>
+                                <div class="form-group">
+                                    <label>Formulación</label>
+                                    <input type="text" id="formulacionFertilizante" placeholder="Ej: 18-46-0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Kg por Hectárea</label>
+                                    <input type="number" id="kgPorHaFertilizante" step="0.01" placeholder="Ej: 100">
+                                </div>
+                                <div class="form-group">
+                                    <label>Precio por Kg ($)</label>
+                                    <input type="number" id="precioFertilizante" step="0.01" placeholder="Ej: 0.80">
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="agregarFertilizante()">➕ Agregar Fertilizante</button>
+                        </div>
+
+                        <!-- TRATAMIENTOS -->
+                        <div class="subsection">
+                            <h4>💉 Tratamientos de Semilla</h4>
+                            <div id="tratamientosList"></div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Producto</label>
+                                    <input type="text" id="productoTratamiento" placeholder="Ej: Cruiser">
+                                </div>
+                                <div class="form-group">
+                                    <label>Dosis</label>
+                                    <input type="text" id="dosisTratamiento" placeholder="Ej: 200ml/50kg">
+                                </div>
+                                <div class="form-group">
+                                    <label>Costo por Hectárea ($)</label>
+                                    <input type="number" id="costoTratamiento" step="0.01" placeholder="Ej: 45.00">
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="agregarTratamiento()">➕ Agregar Tratamiento</button>
+                        </div>
+
+                        <div class="costo-box" id="costosSiembra">
+                            <h4>💰 Resumen de Costos de Siembra</h4>
+                            <div class="costo-item">
+                                <span>Semilla:</span>
+                                <span id="costoSemillaTotal">$0.00</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>Fertilizantes:</span>
+                                <span id="costoFertilizantesTotal">$0.00</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>Tratamientos:</span>
+                                <span id="costoTratamientosTotal">$0.00</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>Alquiler de Tierra:</span>
+                                <span id="costoAlquilerTotal">$0.00</span>
+                            </div>
+                            <div class="costo-item" style="border-top: 2px solid white; margin-top: 10px; padding-top: 10px; font-size: 1.2rem;">
+                                <strong>Costo por Hectárea:</strong>
+                                <strong id="costoPorHaTotal">$0.00</strong>
+                            </div>
+                            <div class="costo-item" style="font-size: 1.2rem;">
+                                <strong>COSTO TOTAL:</strong>
+                                <strong id="costoTotalSiembra">$0.00</strong>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Observaciones</label>
+                            <textarea id="observacionesSiembra" rows="3" placeholder="Condiciones del suelo, clima, etc."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">Registrar Siembra</button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h3>📋 Historial de Siembras</h3>
+                    <div id="historialSiembras"></div>
+                </div>
+            </div>
+
+            <!-- TAB FUMIGACIÓN -->
+            <div id="fumigacion" class="tab-content">
+                <div class="section">
+                    <h3>🚜 Nueva Fumigación</h3>
+                    <form onsubmit="registrarFumigacion(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Seleccionar Parcela *</label>
+                                <select id="parcelaFumigacion" required onchange="cargarInfoParcelaFumigacion()"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Fumigación *</label>
+                                <input type="date" id="fechaFumigacion" required>
+                            </div>
+                        </div>
+
+                        <div id="infoParcelaFum" class="info-box" style="display: none;"></div>
+
+                        <div class="subsection">
+                            <h4>💊 Productos Aplicados</h4>
+                            <div id="productosAplicados"></div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Producto</label>
+                                    <select id="productoFumigacion"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cantidad por Hectárea</label>
+                                    <input type="number" id="cantidadProductoFum" step="0.01" placeholder="Ej: 2.5">
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="agregarProductoFumigacion()">➕ Agregar Producto</button>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Costo de Personal (opcional)</label>
+                                <input type="number" id="costoPersonalFum" step="0.01" placeholder="Ej: 300.00" value="0">
+                            </div>
+                        </div>
+
+                        <div class="costo-box" id="costosFumigacion">
+                            <h4>💰 Resumen de Costos de Fumigación</h4>
+                            <div class="costo-item">
+                                <span>Productos:</span>
+                                <span id="costoProductosFum">$0.00</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>Personal:</span>
+                                <span id="costoPersonalFumDisplay">$0.00</span>
+                            </div>
+                            <div class="costo-item" style="border-top: 2px solid white; margin-top: 10px; padding-top: 10px; font-size: 1.2rem;">
+                                <strong>Costo por Hectárea:</strong>
+                                <strong id="costoPorHaFum">$0.00</strong>
+                            </div>
+                            <div class="costo-item" style="font-size: 1.2rem;">
+                                <strong>COSTO TOTAL:</strong>
+                                <strong id="costoTotalFum">$0.00</strong>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Observaciones</label>
+                            <textarea id="observacionesFum" rows="3" placeholder="Condiciones climáticas, etc."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn">Registrar Fumigación</button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h3>📋 Historial de Fumigaciones</h3>
+                    <div class="form-group">
+                        <label>Filtrar por Parcela</label>
+                        <select id="filtroParcelaFumigacion" onchange="cargarHistorialFumigacion()">
+                            <option value="">Todas las parcelas</option>
+                        </select>
+                    </div>
+                    <div id="historialFumigaciones"></div>
+                </div>
+            </div>
+
+            <!-- TAB COSECHA -->
+            <div id="cosecha" class="tab-content">
+                <div class="section">
+                    <h3>🌾 Registrar Cosecha</h3>
+                    <form onsubmit="registrarCosecha(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Seleccionar Parcela *</label>
+                                <select id="parcelaCosecha" required onchange="cargarInfoParcelaCosecha()"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Cosecha *</label>
+                                <input type="date" id="fechaCosecha" required>
+                            </div>
+                        </div>
+
+                        <div id="infoParcelaCosecha" class="info-box" style="display: none;"></div>
+
+                        <div class="subsection">
+                            <h4>📊 Rendimiento</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Kg por Hectárea *</label>
+                                    <input type="number" id="kgPorHaCosecha" step="0.01" required placeholder="Ej: 4500" onchange="calcularCosecha()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Kg Totales (calculado)</label>
+                                    <input type="number" id="kgTotalesCosecha" step="0.01" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h4>📉 Descuentos del Silo</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>% Descuento Total</label>
+                                    <input type="number" id="descuentoSilo" step="0.01" placeholder="Ej: 2.5" value="0" onchange="calcularCosecha()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Kg Netos (después de descuento)</label>
+                                    <input type="number" id="kgNetosCosecha" step="0.01" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Toneladas Netas</label>
+                                    <input type="number" id="toneladasNetas" step="0.01" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h4>💰 Ingresos y Costos</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Precio por Tonelada ($) *</label>
+                                    <input type="number" id="precioTonelada" step="0.01" required placeholder="Ej: 350.00" onchange="calcularCosecha()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Ingreso Bruto (calculado)</label>
+                                    <input type="number" id="ingresoBruto" step="0.01" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Costo de Flete ($)</label>
+                                    <input type="number" id="costoFlete" step="0.01" placeholder="Ej: 5000.00" value="0" onchange="calcularCosecha()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Otros Costos de Cosecha ($)</label>
+                                    <input type="number" id="otrosCostosCosecha" step="0.01" placeholder="Ej: 2000.00" value="0" onchange="calcularCosecha()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="costo-box" id="resumenCosecha">
+                            <h4>📊 Resumen Financiero</h4>
+                            <div class="costo-item">
+                                <span>Ingreso Bruto:</span>
+                                <span id="displayIngresoBruto">$0.00</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>(-) Costo Siembra:</span>
+                                <span id="displayCostoSiembra">$0.00</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>(-) Costo Fumigaciones:</span>
+                                <span id="displayCostoFumigaciones">$0.00</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>(-) Costo Flete:</span>
+                                <span id="displayCostoFlete">$0.00</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>(-) Otros Costos:</span>
+                                <span id="displayOtrosCostos">$0.00</span>
+                            </div>
+                            <div class="costo-item" style="border-top: 2px solid white; margin-top: 10px; padding-top: 10px; font-size: 1.3rem;">
+                                <strong>GANANCIA/PÉRDIDA:</strong>
+                                <strong id="displayGanancia" style="font-size: 1.5rem;">$0.00</strong>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Observaciones</label>
+                            <textarea id="observacionesCosecha" rows="3" placeholder="Calidad del grano, condiciones, etc."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">Registrar Cosecha</button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h3>📋 Historial de Cosechas</h3>
+                    <div id="historialCosechas"></div>
+                </div>
+            </div>
+
+            <!-- TAB REPORTES -->
+            <div id="reportes" class="tab-content">
+                <div class="section">
+                    <h3>📊 Reportes Completos por Parcela</h3>
+                    <div class="form-group">
+                        <label>Seleccionar Parcela</label>
+                        <select id="parcelaReporte" onchange="generarReporte()"></select>
+                    </div>
+                    <div id="contenidoReporte"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Configuración Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAu8v9vGYDM7IQ9NX4u9JFuTQayn3nUrZY",
+            authDomain: "gestion-agricola-7fa6d.firebaseapp.com",
+            projectId: "gestion-agricola-7fa6d",
+            storageBucket: "gestion-agricola-7fa6d.firebasestorage.app",
+            messagingSenderId: "377995556451",
+            appId: "1:377995556451:web:22b8765aa7e623454c6a56"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let currentUser = null;
+        let fertilizantesTemp = [];
+        let tratamientosTemp = [];
+        let productosTemp = [];
+
+        document.getElementById('loadingScreen').style.display = 'none';
+
+        // AUTH
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('currentUser').textContent = user.email;
+                await inicializarApp();
+            } else {
+                document.getElementById('loginScreen').style.display = 'block';
+                document.getElementById('mainApp').style.display = 'none';
+            }
+        });
+
+        window.loginUser = async function() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+                errorDiv.style.display = 'block';
+            }
+        };
+
+        window.registerUser = async function() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (password.length < 6) {
+                errorDiv.textContent = 'La contraseña debe tener al menos 6 caracteres';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+                errorDiv.style.display = 'block';
+            }
+        };
+
+        window.logoutUser = function() {
+            if (confirm('¿Cerrar sesión?')) {
+                signOut(auth);
+            }
+        };
+
+        async function inicializarApp() {
+            await cargarParcelas();
+            await cargarProductos();
+            await poblarSelects();
+            await cargarHistorialSiembras();
+            await cargarHistorialFumigacion();
+            await cargarHistorialCosechas();
+        }
+
+        // TABS
+        window.cambiarTab = function(event, tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        };
+
+        // PARCELAS
+        window.toggleAlquiler = function() {
+            const alquilada = document.getElementById('alquiladaParcela').value === 'true';
+            document.getElementById('costoAlquilerGroup').style.display = alquilada ? 'block' : 'none';
+        };
+
+        window.crearParcela = async function(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('nombreParcela').value.trim();
+            const hectareas = parseFloat(document.getElementById('hectareasParcela').value);
+            const alquilada = document.getElementById('alquiladaParcela').value === 'true';
+            const costoAlquiler = alquilada ? parseFloat(document.getElementById('costoAlquilerParcela').value) || 0 : 0;
+            
+            if (!nombre || hectareas <= 0) {
+                mostrarMensaje('Por favor completa todos los campos correctamente', 'danger');
+                return;
+            }
+            
+            try {
+                await addDoc(collection(db, 'parcelas'), {
+                    nombre,
+                    hectareas,
+                    alquilada,
+                    costoAlquiler,
+                    cultivoActual: null,
+                    userId: currentUser.uid,
+                    timestamp: serverTimestamp()
+                });
+                
+                e.target.reset();
+                document.getElementById('costoAlquilerGroup').style.display = 'none';
+                await cargarParcelas();
+                await poblarSelects();
+                mostrarMensaje('✅ Parcela creada correctamente', 'success');
+            } catch (error) {
+                console.error('Error al crear parcela:', error);
+                mostrarMensaje('❌ Error al crear parcela: ' + error.message, 'danger');
+            }
+        };
+
+        async function cargarParcelas() {
+            try {
+                const q = query(
+                    collection(db, 'parcelas'),
+                    where('userId', '==', currentUser.uid),
+                    orderBy('timestamp', 'desc')
+                );
+                const snapshot = await getDocs(q);
+                
+                const container = document.getElementById('listaParcelas');
+                container.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    container.innerHTML = '<p>No hay parcelas registradas.</p>';
+                    return;
+                }
+                
+                for (const docSnap of snapshot.docs) {
+                    const parcela = docSnap.data();
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    let infoAdicional = '';
+                    if (parcela.cultivoActual) {
+                        const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
+                        if (siembraDoc.exists()) {
+                            const siembra = siembraDoc.data();
+                            const diasCultivo = calcularDias(siembra.fechaGerminacion);
+                            infoAdicional = `
+                                <div class="info-box">
+                                    <strong>🌱 Cultivo Activo:</strong> ${siembra.cultivo} - ${siembra.variedad}<br>
+                                    <strong>📅 Siembra:</strong> ${formatearFecha(siembra.fecha)}<br>
+                                    <strong>📅 Germinación:</strong> ${formatearFecha(siembra.fechaGerminacion)}<br>
+                                    <strong>⏰ Días del cultivo:</strong> ${diasCultivo} días<br>
+                                    <strong>💰 Costo de siembra:</strong> ${siembra.costoTotal.toFixed(2)}
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div>
+                                <h3 style="color: #1e3a20; margin-bottom: 5px;">${parcela.cultivoActual ? '🟢' : '⚪'} ${parcela.nombre}</h3>
+                                <p style="color: #666;">📏 ${parcela.hectareas} hectáreas</p>
+                                ${parcela.alquilada ? `<span class="badge badge-warning">Alquilada: ${parcela.costoAlquiler}/ha</span>` : '<span class="badge badge-success">Propia</span>'}
+                            </div>
+                            <div>
+                                <button class="btn btn-danger" onclick="eliminarParcela('${docSnap.id}')">🗑️ Eliminar</button>
+                            </div>
+                        </div>
+                        ${infoAdicional}
+                    `;
+                    
+                    container.appendChild(card);
+                }
+            } catch (error) {
+                console.error('Error al cargar parcelas:', error);
+                mostrarMensaje('❌ Error al cargar parcelas', 'danger');
+            }
+        }
+
+        window.eliminarParcela = async function(id) {
+            if (!confirm('¿Eliminar esta parcela permanentemente? Se eliminarán todos los registros asociados.')) return;
+            
+            try {
+                await deleteDoc(doc(db, 'parcelas', id));
+                await cargarParcelas();
+                await poblarSelects();
+                mostrarMensaje('✅ Parcela eliminada', 'success');
+            } catch (error) {
+                console.error('Error al eliminar:', error);
+                mostrarMensaje('❌ Error al eliminar parcela', 'danger');
+            }
+        };
+
+        // PRODUCTOS
+        window.crearProducto = async function(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('nombreProducto').value.trim();
+            const tipo = document.getElementById('tipoProducto').value;
+            const precio = parseFloat(document.getElementById('precioProducto').value);
+            const unidad = document.getElementById('unidadProducto').value;
+            
+            if (!nombre || precio <= 0) {
+                mostrarMensaje('Por favor completa todos los campos', 'danger');
+                return;
+            }
+            
+            try {
+                await addDoc(collection(db, 'productos'), {
+                    nombre,
+                    tipo,
+                    precio,
+                    unidad,
+                    userId: currentUser.uid,
+                    timestamp: serverTimestamp()
+                });
+                
+                e.target.reset();
+                await cargarProductos();
+                await poblarSelects();
+                mostrarMensaje('✅ Producto agregado correctamente', 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al agregar producto', 'danger');
+            }
+        };
+
+        async function cargarProductos() {
+            try {
+                const q = query(
+                    collection(db, 'productos'),
+                    where('userId', '==', currentUser.uid)
+                );
+                const snapshot = await getDocs(q);
+                
+                const tbody = document.getElementById('listaProductos');
+                tbody.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="5">No hay productos registrados</td></tr>';
+                    return;
+                }
+                
+                snapshot.forEach(docSnap => {
+                    const prod = docSnap.data();
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${prod.nombre}</td>
+                        <td><span class="badge badge-info">${prod.tipo}</span></td>
+                        <td>${prod.precio.toFixed(2)}</td>
+                        <td>${prod.unidad}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="eliminarProducto('${docSnap.id}')" style="padding: 5px 15px;">🗑️</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        window.eliminarProducto = async function(id) {
+            if (!confirm('¿Eliminar este producto?')) return;
+            
+            try {
+                await deleteDoc(doc(db, 'productos', id));
+                await cargarProductos();
+                await poblarSelects();
+                mostrarMensaje('✅ Producto eliminado', 'success');
+            } catch (error) {
+                mostrarMensaje('❌ Error al eliminar producto', 'danger');
+            }
+        };
+
+        // SIEMBRA
+        window.cargarInfoParcelaSiembra = async function() {
+            calcularCostosSiembra();
+        };
+
+        window.agregarFertilizante = function() {
+            const nombre = document.getElementById('nombreFertilizante').value.trim();
+            const formulacion = document.getElementById('formulacionFertilizante').value.trim();
+            const kgPorHa = parseFloat(document.getElementById('kgPorHaFertilizante').value);
+            const precio = parseFloat(document.getElementById('precioFertilizante').value);
+            
+            if (!nombre || !kgPorHa || !precio) {
+                alert('Completa todos los campos del fertilizante');
+                return;
+            }
+            
+            fertilizantesTemp.push({ nombre, formulacion, kgPorHa, precio });
+            actualizarListaFertilizantes();
+            
+            document.getElementById('nombreFertilizante').value = '';
+            document.getElementById('formulacionFertilizante').value = '';
+            document.getElementById('kgPorHaFertilizante').value = '';
+            document.getElementById('precioFertilizante').value = '';
+        };
+
+        function actualizarListaFertilizantes() {
+            const lista = document.getElementById('fertilizantesList');
+            lista.innerHTML = '';
+            
+            fertilizantesTemp.forEach((fert, index) => {
+                const item = document.createElement('div');
+                item.className = 'producto-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>${fert.nombre}</strong> ${fert.formulacion ? '- ' + fert.formulacion : ''}<br>
+                        <small>${fert.kgPorHa} kg/ha × ${fert.precio}/kg = ${(fert.kgPorHa * fert.precio).toFixed(2)}/ha</small>
+                    </div>
+                    <button type="button" class="btn btn-danger" onclick="eliminarFertilizante(${index})" style="padding: 5px 15px;">🗑️</button>
+                `;
+                lista.appendChild(item);
+            });
+            
+            calcularCostosSiembra();
+        }
+
+        window.eliminarFertilizante = function(index) {
+            fertilizantesTemp.splice(index, 1);
+            actualizarListaFertilizantes();
+        };
+
+        window.agregarTratamiento = function() {
+            const producto = document.getElementById('productoTratamiento').value.trim();
+            const dosis = document.getElementById('dosisTratamiento').value.trim();
+            const costo = parseFloat(document.getElementById('costoTratamiento').value);
+            
+            if (!producto || !costo) {
+                alert('Completa los campos del tratamiento');
+                return;
+            }
+            
+            tratamientosTemp.push({ producto, dosis, costo });
+            actualizarListaTratamientos();
+            
+            document.getElementById('productoTratamiento').value = '';
+            document.getElementById('dosisTratamiento').value = '';
+            document.getElementById('costoTratamiento').value = '';
+        };
+
+        function actualizarListaTratamientos() {
+            const lista = document.getElementById('tratamientosList');
+            lista.innerHTML = '';
+            
+            tratamientosTemp.forEach((trat, index) => {
+                const item = document.createElement('div');
+                item.className = 'producto-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>${trat.producto}</strong><br>
+                        <small>Dosis: ${trat.dosis || 'N/A'} - ${trat.costo.toFixed(2)}/ha</small>
+                    </div>
+                    <button type="button" class="btn btn-danger" onclick="eliminarTratamiento(${index})" style="padding: 5px 15px;">🗑️</button>
+                `;
+                lista.appendChild(item);
+            });
+            
+            calcularCostosSiembra();
+        }
+
+        window.eliminarTratamiento = function(index) {
+            tratamientosTemp.splice(index, 1);
+            actualizarListaTratamientos();
+        };
+
+        function calcularCostosSiembra() {
+            const parcelaId = document.getElementById('parcelaSiembra').value;
+            if (!parcelaId) return;
+            
+            getDoc(doc(db, 'parcelas', parcelaId)).then(docSnap => {
+                if (!docSnap.exists()) return;
+                
+                const parcela = docSnap.data();
+                const hectareas = parcela.hectareas;
+                
+                // Semilla
+                const kgSemilla = parseFloat(document.getElementById('kgPorHaSemilla').value) || 0;
+                const precioSemilla = parseFloat(document.getElementById('precioKgSemilla').value) || 0;
+                const costoSemillaPorHa = kgSemilla * precioSemilla;
+                const costoSemillaTotal = costoSemillaPorHa * hectareas;
+                
+                // Fertilizantes
+                let costoFertPorHa = 0;
+                fertilizantesTemp.forEach(f => {
+                    costoFertPorHa += f.kgPorHa * f.precio;
+                });
+                const costoFertTotal = costoFertPorHa * hectareas;
+                
+                // Tratamientos
+                let costoTratPorHa = 0;
+                tratamientosTemp.forEach(t => {
+                    costoTratPorHa += t.costo;
+                });
+                const costoTratTotal = costoTratPorHa * hectareas;
+                
+                // Alquiler
+                const costoAlquilerTotal = parcela.alquilada ? parcela.costoAlquiler * hectareas : 0;
+                
+                // Totales
+                const costoPorHa = costoSemillaPorHa + costoFertPorHa + costoTratPorHa + (parcela.alquilada ? parcela.costoAlquiler : 0);
+                const costoTotal = costoSemillaTotal + costoFertTotal + costoTratTotal + costoAlquilerTotal;
+                
+                document.getElementById('costoSemillaTotal').textContent = `${costoSemillaTotal.toFixed(2)}`;
+                document.getElementById('costoFertilizantesTotal').textContent = `${costoFertTotal.toFixed(2)}`;
+                document.getElementById('costoTratamientosTotal').textContent = `${costoTratTotal.toFixed(2)}`;
+                document.getElementById('costoAlquilerTotal').textContent = `${costoAlquilerTotal.toFixed(2)}`;
+                document.getElementById('costoPorHaTotal').textContent = `${costoPorHa.toFixed(2)}`;
+                document.getElementById('costoTotalSiembra').textContent = `${costoTotal.toFixed(2)}`;
+            });
+        }
+
+        // Listeners para recalcular
+        document.getElementById('kgPorHaSemilla')?.addEventListener('input', calcularCostosSiembra);
+        document.getElementById('precioKgSemilla')?.addEventListener('input', calcularCostosSiembra);
+
+        window.registrarSiembra = async function(e) {
+            e.preventDefault();
+            
+            const parcelaId = document.getElementById('parcelaSiembra').value;
+            const fecha = document.getElementById('fechaSiembra').value;
+            const cultivo = document.getElementById('cultivoSiembra').value.trim();
+            const variedad = document.getElementById('variedadSiembra').value.trim();
+            const diasGerminacion = parseInt(document.getElementById('diasGerminacion').value);
+            const observaciones = document.getElementById('observacionesSiembra').value.trim();
+            
+            if (!parcelaId || !fecha || !cultivo || !variedad) {
+                mostrarMensaje('Completa los campos obligatorios', 'danger');
+                return;
+            }
+            
+            try {
+                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
+                if (!parcelaDoc.exists()) {
+                    mostrarMensaje('Parcela no encontrada', 'danger');
+                    return;
+                }
+                
+                const parcela = parcelaDoc.data();
+                const hectareas = parcela.hectareas;
+                
+                // Calcular fecha de germinación
+                const fechaSiembra = new Date(fecha);
+                const fechaGerm = new Date(fechaSiembra);
+                fechaGerm.setDate(fechaGerm.getDate() + diasGerminacion);
+                const fechaGerminacion = fechaGerm.toISOString().split('T')[0];
+                
+                // Semilla
+                const kgSemilla = parseFloat(document.getElementById('kgPorHaSemilla').value) || 0;
+                const precioSemilla = parseFloat(document.getElementById('precioKgSemilla').value) || 0;
+                const semilla = {
+                    tipo: document.getElementById('tipoSemilla').value.trim(),
+                    marca: document.getElementById('marcaSemilla').value.trim(),
+                    kgPorHa: kgSemilla,
+                    precioKg: precioSemilla,
+                    costoTotal: kgSemilla * precioSemilla * hectareas
+                };
+                
+                // Cálculos finales
+                let costoFertTotal = 0;
+                fertilizantesTemp.forEach(f => {
+                    costoFertTotal += f.kgPorHa * f.precio * hectareas;
+                });
+                
+                let costoTratTotal = 0;
+                tratamientosTemp.forEach(t => {
+                    costoTratTotal += t.costo * hectareas;
+                });
+                
+                const costoAlquilerTotal = parcela.alquilada ? parcela.costoAlquiler * hectareas : 0;
+                const costoTotal = semilla.costoTotal + costoFertTotal + costoTratTotal + costoAlquilerTotal;
+                const costoPorHa = costoTotal / hectareas;
+                
+                const siembraDoc = await addDoc(collection(db, 'siembras'), {
+                    parcelaId,
+                    parcelaNombre: parcela.nombre,
+                    hectareas,
+                    fecha,
+                    fechaGerminacion,
+                    cultivo,
+                    variedad,
+                    diasGerminacion,
+                    semilla,
+                    fertilizantes: [...fertilizantesTemp],
+                    tratamientos: [...tratamientosTemp],
+                    costoAlquiler: costoAlquilerTotal,
+                    costoPorHa,
+                    costoTotal,
+                    observaciones,
+                    userId: currentUser.uid,
+                    timestamp: serverTimestamp()
+                });
+                
+                // Actualizar parcela con cultivo activo
+                await updateDoc(doc(db, 'parcelas', parcelaId), {
+                    cultivoActual: siembraDoc.id
+                });
+                
+                // Limpiar formulario
+                e.target.reset();
+                fertilizantesTemp = [];
+                tratamientosTemp = [];
+                document.getElementById('fertilizantesList').innerHTML = '';
+                document.getElementById('tratamientosList').innerHTML = '';
+                document.getElementById('costoSemillaTotal').textContent = '$0.00';
+                document.getElementById('costoFertilizantesTotal').textContent = '$0.00';
+                document.getElementById('costoTratamientosTotal').textContent = '$0.00';
+                document.getElementById('costoAlquilerTotal').textContent = '$0.00';
+                document.getElementById('costoPorHaTotal').textContent = '$0.00';
+                document.getElementById('costoTotalSiembra').textContent = '$0.00';
+                
+                await cargarParcelas();
+                await cargarHistorialSiembras();
+                await poblarSelects();
+                mostrarMensaje('✅ Siembra registrada correctamente', 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al registrar siembra: ' + error.message, 'danger');
+            }
+        };
+
+        async function cargarHistorialSiembras() {
+            try {
+                const q = query(
+                    collection(db, 'siembras'),
+                    where('userId', '==', currentUser.uid),
+                    orderBy('timestamp', 'desc')
+                );
+                const snapshot = await getDocs(q);
+                
+                const container = document.getElementById('historialSiembras');
+                container.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    container.innerHTML = '<p>No hay siembras registradas</p>';
+                    return;
+                }
+                
+                snapshot.forEach(docSnap => {
+                    const siembra = docSnap.data();
+                    
+                    let fertilizantesHtml = '';
+                    if (siembra.fertilizantes && siembra.fertilizantes.length > 0) {
+                        fertilizantesHtml = '<ul style="margin: 5px 0; padding-left: 20px;">';
+                        siembra.fertilizantes.forEach(f => {
+                            fertilizantesHtml += `<li>${f.nombre} ${f.formulacion ? '(' + f.formulacion + ')' : ''}: ${f.kgPorHa} kg/ha</li>`;
+                        });
+                        fertilizantesHtml += '</ul>';
+                    }
+                    
+                    let tratamientosHtml = '';
+                    if (siembra.tratamientos && siembra.tratamientos.length > 0) {
+                        tratamientosHtml = '<ul style="margin: 5px 0; padding-left: 20px;">';
+                        siembra.tratamientos.forEach(t => {
+                            tratamientosHtml += `<li>${t.producto}: ${t.dosis || 'N/A'}</li>`;
+                        });
+                        tratamientosHtml += '</ul>';
+                    }
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div>
+                                <h4 style="margin-bottom: 5px;">${siembra.parcelaNombre} - ${siembra.cultivo} ${siembra.variedad}</h4>
+                                <p style="color: #666;">📅 Siembra: ${formatearFecha(siembra.fecha)} | Germinación: ${formatearFecha(siembra.fechaGerminacion)}</p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <strong>🌾 Semilla:</strong> ${siembra.semilla.tipo || 'N/A'} ${siembra.semilla.marca ? '- ' + siembra.semilla.marca : ''} (${siembra.semilla.kgPorHa} kg/ha)<br>
+                            ${fertilizantesHtml ? '<strong>💊 Fertilizantes:</strong>' + fertilizantesHtml : ''}
+                            ${tratamientosHtml ? '<strong>💉 Tratamientos:</strong>' + tratamientosHtml : ''}
+                            ${siembra.observaciones ? `<p style="margin-top: 10px;"><strong>📝 Observaciones:</strong> ${siembra.observaciones}</p>` : ''}
+                        </div>
+                        <div class="costo-box" style="margin-top: 15px;">
+                            <div class="costo-item">
+                                <span>Costo por Hectárea:</span>
+                                <span>${siembra.costoPorHa.toFixed(2)}</span>
+                            </div>
+                            <div class="costo-item">
+                                <strong>Costo Total:</strong>
+                                <strong>${siembra.costoTotal.toFixed(2)}</strong>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // FUMIGACIÓN
+        window.cargarInfoParcelaFumigacion = async function() {
+            const parcelaId = document.getElementById('parcelaFumigacion').value;
+            const infoDiv = document.getElementById('infoParcelaFum');
+            
+            if (!parcelaId) {
+                infoDiv.style.display = 'none';
+                return;
+            }
+            
+            try {
+                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
+                if (!parcelaDoc.exists()) return;
+                
+                const parcela = parcelaDoc.data();
+                
+                if (parcela.cultivoActual) {
+                    const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
+                    if (siembraDoc.exists()) {
+                        const siembra = siembraDoc.data();
+                        const diasCultivo = calcularDias(siembra.fechaGerminacion);
+                        
+                        // Buscar última fumigación
+                        const qFum = query(
+                            collection(db, 'fumigaciones'),
+                            where('parcelaId', '==', parcelaId),
+                            orderBy('fecha', 'desc')
+                        );
+                        const fumSnapshot = await getDocs(qFum);
+                        let diasDesdeUltima = 'N/A';
+                        
+                        if (!fumSnapshot.empty) {
+                            const ultimaFum = fumSnapshot.docs[0].data();
+                            diasDesdeUltima = calcularDias(ultimaFum.fecha);
+                        }
+                        
+                        infoDiv.innerHTML = `
+                            <strong>🌱 Cultivo:</strong> ${siembra.cultivo} - ${siembra.variedad}<br>
+                            <strong>📏 Hectáreas:</strong> ${parcela.hectareas} ha<br>
+                            <strong>📅 Germinación:</strong> ${formatearFecha(siembra.fechaGerminacion)}<br>
+                            <strong>⏰ Días del cultivo:</strong> ${diasCultivo} días<br>
+                            <strong>🚜 Días desde última fumigación:</strong> ${diasDesdeUltima} días
+                        `;
+                        infoDiv.style.display = 'block';
+                    }
+                } else {
+                    infoDiv.innerHTML = '<p style="color: #dc3545;">⚠️ Esta parcela no tiene un cultivo activo</p>';
+                    infoDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            
+            calcularCostosFumigacion();
+        };
+
+        window.agregarProductoFumigacion = function() {
+            const productoSelect = document.getElementById('productoFumigacion');
+            const cantidad = parseFloat(document.getElementById('cantidadProductoFum').value);
+            
+            if (!productoSelect.value || !cantidad || cantidad <= 0) {
+                alert('Selecciona un producto y una cantidad válida');
+                return;
+            }
+            
+            const productoId = productoSelect.value;
+            const productoNombre = productoSelect.options[productoSelect.selectedIndex].text;
+            const productoData = productoSelect.options[productoSelect.selectedIndex].dataset;
+            
+            const producto = {
+                id: productoId,
+                nombre: productoNombre,
+                cantidad: cantidad,
+                precio: parseFloat(productoData.precio),
+                unidad: productoData.unidad
+            };
+            
+            productosTemp.push(producto);
+            actualizarListaProductosFumigacion();
+            
+            document.getElementById('cantidadProductoFum').value = '';
+            productoSelect.value = '';
+        };
+
+        async function actualizarListaProductosFumigacion() {
+            const container = document.getElementById('productosAplicados');
+            const parcelaId = document.getElementById('parcelaFumigacion').value;
+            
+            if (productosTemp.length === 0) {
+                container.innerHTML = '<p style="color: #666;">No hay productos agregados</p>';
+                calcularCostosFumigacion();
+                return;
+            }
+            
+            if (!parcelaId) return;
+            
+            const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
+            const hectareas = parcelaDoc.exists() ? parcelaDoc.data().hectareas : 0;
+            
+            let html = '';
+            
+            productosTemp.forEach((prod, index) => {
+                const cantidadTotal = prod.cantidad * hectareas;
+                const costoProducto = cantidadTotal * prod.precio;
+                
+                html += `
+                    <div class="producto-item">
+                        <div>
+                            <strong>${prod.nombre}</strong><br>
+                            <small>${prod.cantidad} ${prod.unidad}/ha × ${hectareas} ha = ${cantidadTotal.toFixed(2)} ${prod.unidad}</small><br>
+                            <small style="color: #28a745;">💰 ${costoProducto.toFixed(2)}</small>
+                        </div>
+                        <button type="button" class="btn btn-danger" onclick="eliminarProductoFumigacion(${index})" style="padding: 5px 15px;">🗑️</button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            calcularCostosFumigacion();
+        }
+
+        window.eliminarProductoFumigacion = function(index) {
+            productosTemp.splice(index, 1);
+            actualizarListaProductosFumigacion();
+        };
+
+        async function calcularCostosFumigacion() {
+            const parcelaId = document.getElementById('parcelaFumigacion').value;
+            if (!parcelaId) return;
+            
+            const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
+            if (!parcelaDoc.exists()) return;
+            
+            const hectareas = parcelaDoc.data().hectareas;
+            const costoPersonal = parseFloat(document.getElementById('costoPersonalFum').value) || 0;
+            
+            let costoProductos = 0;
+            productosTemp.forEach(prod => {
+                const cantTotal = prod.cantidad * hectareas;
+                costoProductos += cantTotal * prod.precio;
+            });
+            
+            const costoTotal = costoProductos + costoPersonal;
+            const costoPorHa = costoTotal / hectareas;
+            
+            document.getElementById('costoProductosFum').textContent = `${costoProductos.toFixed(2)}`;
+            document.getElementById('costoPersonalFumDisplay').textContent = `${costoPersonal.toFixed(2)}`;
+            document.getElementById('costoPorHaFum').textContent = `${costoPorHa.toFixed(2)}`;
+            document.getElementById('costoTotalFum').textContent = `${costoTotal.toFixed(2)}`;
+        }
+
+        document.getElementById('costoPersonalFum')?.addEventListener('input', calcularCostosFumigacion);
+
+        window.registrarFumigacion = async function(e) {
+            e.preventDefault();
+            
+            const parcelaId = document.getElementById('parcelaFumigacion').value;
+            const fecha = document.getElementById('fechaFumigacion').value;
+            const observaciones = document.getElementById('observacionesFum').value.trim();
+            const costoPersonal = parseFloat(document.getElementById('costoPersonalFum').value) || 0;
+            
+            if (!parcelaId || !fecha) {
+                mostrarMensaje('Selecciona una parcela y fecha', 'danger');
+                return;
+            }
+            
+            if (productosTemp.length === 0) {
+                mostrarMensaje('Debes agregar al menos un producto', 'danger');
+                return;
+            }
+            
+            try {
+                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
+                if (!parcelaDoc.exists()) {
+                    mostrarMensaje('Parcela no encontrada', 'danger');
+                    return;
+                }
+                
+                const parcela = parcelaDoc.data();
+                
+                if (!parcela.cultivoActual) {
+                    mostrarMensaje('La parcela no tiene un cultivo activo', 'danger');
+                    return;
+                }
+                
+                const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
+                if (!siembraDoc.exists()) {
+                    mostrarMensaje('No se encontró información de siembra', 'danger');
+                    return;
+                }
+                
+                const siembra = siembraDoc.data();
+                const diasCultivo = calcularDiasEntre(siembra.fechaGerminacion, fecha);
+                
+                // Días desde última fumigación
+                const qFum = query(
+                    collection(db, 'fumigaciones'),
+                    where('parcelaId', '==', parcelaId),
+                    orderBy('fecha', 'desc')
+                );
+                const fumSnapshot = await getDocs(qFum);
+                let diasDesdeUltima = 0;
+                
+                if (!fumSnapshot.empty) {
+                    const ultimaFum = fumSnapshot.docs[0].data();
+                    diasDesdeUltima = calcularDiasEntre(ultimaFum.fecha, fecha);
+                }
+                
+                // Calcular costos
+                let costoProductos = 0;
+                productosTemp.forEach(prod => {
+                    const cantTotal = prod.cantidad * parcela.hectareas;
+                    costoProductos += cantTotal * prod.precio;
+                });
+                
+                const costoTotal = costoProductos + costoPersonal;
+                const costoPorHa = costoTotal / parcela.hectareas;
+                
+                await addDoc(collection(db, 'fumigaciones'), {
+                    parcelaId,
+                    parcelaNombre: parcela.nombre,
+                    siembraId: parcela.cultivoActual,
+                    cultivo: siembra.cultivo,
+                    variedad: siembra.variedad,
+                    hectareas: parcela.hectareas,
+                    fecha,
+                    diasCultivo,
+                    diasDesdeUltima,
+                    productos: [...productosTemp],
+                    costoProductos,
+                    costoPersonal,
+                    costoPorHa,
+                    costoTotal,
+                    observaciones,
+                    userId: currentUser.uid,
+                    timestamp: serverTimestamp()
+                });
+                
+                // Limpiar
+                e.target.reset();
+                productosTemp = [];
+                document.getElementById('productosAplicados').innerHTML = '';
+                document.getElementById('infoParcelaFum').style.display = 'none';
+                document.getElementById('costoProductosFum').textContent = '$0.00';
+                document.getElementById('costoPersonalFumDisplay').textContent = '$0.00';
+                document.getElementById('costoPorHaFum').textContent = '$0.00';
+                document.getElementById('costoTotalFum').textContent = '$0.00';
+                
+                await cargarHistorialFumigacion();
+                mostrarMensaje('✅ Fumigación registrada correctamente', 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al registrar fumigación: ' + error.message, 'danger');
+            }
+        };
+
+        window.cargarHistorialFumigacion = async function() {
+            try {
+                const filtroParcelaId = document.getElementById('filtroParcelaFumigacion').value;
+                const container = document.getElementById('historialFumigaciones');
+                
+                let q;
+                if (filtroParcelaId) {
+                    q = query(
+                        collection(db, 'fumigaciones'),
+                        where('userId', '==', currentUser.uid),
+                        where('parcelaId', '==', filtroParcelaId),
+                        orderBy('fecha', 'desc')
+                    );
+                } else {
+                    q = query(
+                        collection(db, 'fumigaciones'),
+                        where('userId', '==', currentUser.uid),
+                        orderBy('fecha', 'desc')
+                    );
+                }
+                
+                const snapshot = await getDocs(q);
+                
+                if (snapshot.empty) {
+                    container.innerHTML = '<p>No hay fumigaciones registradas</p>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                snapshot.forEach(docSnap => {
+                    const fum = docSnap.data();
+                    
+                    let productosHtml = '<ul style="margin: 10px 0; padding-left: 20px;">';
+                    fum.productos.forEach(prod => {
+                        const cantTotal = prod.cantidad * fum.hectareas;
+                        productosHtml += `<li>${prod.nombre}: ${prod.cantidad} ${prod.unidad}/ha (Total: ${cantTotal.toFixed(2)} ${prod.unidad})</li>`;
+                    });
+                    productosHtml += '</ul>';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div>
+                                <h4 style="margin-bottom: 5px;">${fum.parcelaNombre} - ${fum.cultivo} ${fum.variedad}</h4>
+                                <p style="color: #666;">
+                                    📅 ${formatearFecha(fum.fecha)} | 
+                                    Día ${fum.diasCultivo} del cultivo | 
+                                    ${fum.diasDesdeUltima > 0 ? fum.diasDesdeUltima + ' días desde última fumigación' : 'Primera fumigación'}
+                                </p>
+                            </div>
+                            <div>
+                                <button class="btn btn-danger" onclick="eliminarFumigacion('${docSnap.id}')">🗑️</button>
+                            </div>
+                        </div>
+                        <strong>💊 Productos aplicados:</strong>
+                        ${productosHtml}
+                        ${fum.costoPersonal > 0 ? `<p><strong>👷 Personal:</strong> ${fum.costoPersonal.toFixed(2)}</p>` : ''}
+                        ${fum.observaciones ? `<p><strong>📝 Observaciones:</strong> ${fum.observaciones}</p>` : ''}
+                        <div class="costo-box" style="margin-top: 10px;">
+                            <div class="costo-item">
+                                <span>Costo por Hectárea:</span>
+                                <span>${fum.costoPorHa.toFixed(2)}</span>
+                            </div>
+                            <div class="costo-item">
+                                <strong>Costo Total:</strong>
+                                <strong>${fum.costoTotal.toFixed(2)}</strong>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        window.eliminarFumigacion = async function(id) {
+            if (!confirm('¿Eliminar este registro de fumigación?')) return;
+            
+            try {
+                await deleteDoc(doc(db, 'fumigaciones', id));
+                await cargarHistorialFumigacion();
+                mostrarMensaje('✅ Fumigación eliminada', 'success');
+            } catch (error) {
+                mostrarMensaje('❌ Error al eliminar', 'danger');
+            }
+        };
+
+        // COSECHA
+        window.cargarInfoParcelaCosecha = async function() {
+            const parcelaId = document.getElementById('parcelaCosecha').value;
+            const infoDiv = document.getElementById('infoParcelaCosecha');
+            
+            if (!parcelaId) {
+                infoDiv.style.display = 'none';
+                return;
+            }
+            
+            try {
+                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
+                if (!parcelaDoc.exists()) return;
+                
+                const parcela = parcelaDoc.data();
+                
+                if (parcela.cultivoActual) {
+                    const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
+                    if (siembraDoc.exists()) {
+                        const siembra = siembraDoc.data();
+                        const diasCultivo = calcularDias(siembra.fechaGerminacion);
+                        
+                        infoDiv.innerHTML = `
+                            <strong>🌱 Cultivo:</strong> ${siembra.cultivo} - ${siembra.variedad}<br>
+                            <strong>📏 Hectáreas:</strong> ${parcela.hectareas} ha<br>
+                            <strong>📅 Siembra:</strong> ${formatearFecha(siembra.fecha)}<br>
+                            <strong>⏰ Días del cultivo:</strong> ${diasCultivo} días<br>
+                            <strong>💰 Costo de siembra:</strong> ${siembra.costoTotal.toFixed(2)}
+                        `;
+                        infoDiv.style.display = 'block';
+                    }
+                } else {
+                    infoDiv.innerHTML = '<p style="color: #dc3545;">⚠️ Esta parcela no tiene un cultivo activo</p>';
+                    infoDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            
+            calcularCosecha();
+        };
+
+        window.calcularCosecha = async function() {
+            const parcelaId = document.getElementById('parcelaCosecha').value;
+            if (!parcelaId) return;
+            
+            const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
+            if (!parcelaDoc.exists() || !parcelaDoc.data().cultivoActual) return;
+            
+            const parcela = parcelaDoc.data();
+            const hectareas = parcela.hectareas;
+            
+            const kgPorHa = parseFloat(document.getElementById('kgPorHaCosecha').value) || 0;
+            const kgTotales = kgPorHa * hectareas;
+            
+            const descuento = parseFloat(document.getElementById('descuentoSilo').value) || 0;
+            const kgNetos = kgTotales * (1 - descuento / 100);
+            const toneladas = kgNetos / 1000;
+            
+            const precioTon = parseFloat(document.getElementById('precioTonelada').value) || 0;
+            const ingresoBruto = toneladas * precioTon;
+            
+            const costoFlete = parseFloat(document.getElementById('costoFlete').value) || 0;
+            const otrosCostos = parseFloat(document.getElementById('otrosCostosCosecha').value) || 0;
+            
+            document.getElementById('kgTotalesCosecha').value = kgTotales.toFixed(2);
+            document.getElementById('kgNetosCosecha').value = kgNetos.toFixed(2);
+            document.getElementById('toneladasNetas').value = toneladas.toFixed(2);
+            document.getElementById('ingresoBruto').value = ingresoBruto.toFixed(2);
+            
+            // Obtener costos de siembra
+            const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
+            const costoSiembra = siembraDoc.exists() ? siembraDoc.data().costoTotal : 0;
+            
+            // Obtener costos de fumigaciones
+            const qFum = query(
+                collection(db, 'fumigaciones'),
+                where('parcelaId', '==', parcelaId),
+                where('siembraId', '==', parcela.cultivoActual)
+            );
+            const fumSnapshot = await getDocs(qFum);
+            let costoFumigaciones = 0;
+            fumSnapshot.forEach(doc => {
+                costoFumigaciones += doc.data().costoTotal;
+            });
+            
+            const ganancia = ingresoBruto - costoSiembra - costoFumigaciones - costoFlete - otrosCostos;
+            
+            document.getElementById('displayIngresoBruto').textContent = `${ingresoBruto.toFixed(2)}`;
+            document.getElementById('displayCostoSiembra').textContent = `${costoSiembra.toFixed(2)}`;
+            document.getElementById('displayCostoFumigaciones').textContent = `${costoFumigaciones.toFixed(2)}`;
+            document.getElementById('displayCostoFlete').textContent = `${costoFlete.toFixed(2)}`;
+            document.getElementById('displayOtrosCostos').textContent = `${otrosCostos.toFixed(2)}`;
+            document.getElementById('displayGanancia').textContent = `${ganancia.toFixed(2)}`;
+            document.getElementById('displayGanancia').style.color = ganancia >= 0 ? '#fff' : '#ff4444';
+        };
+
+        document.getElementById('kgPorHaCosecha')?.addEventListener('input', calcularCosecha);
+        document.getElementById('descuentoSilo')?.addEventListener('input', calcularCosecha);
+        document.getElementById('precioTonelada')?.addEventListener('input', calcularCosecha);
+        document.getElementById('costoFlete')?.addEventListener('input', calcularCosecha);
+        document.getElementById('otrosCostosCosecha')?.addEventListener('input', calcularCosecha);
+
+        window.registrarCosecha = async function(e) {
+            e.preventDefault();
+            
+            const parcelaId = document.getElementById('parcelaCosecha').value;
+            const fecha = document.getElementById('fechaCosecha').value;
+            const observaciones = document.getElementById('observacionesCosecha').value.trim();
+            
+            if (!parcelaId || !fecha) {
+                mostrarMensaje('Selecciona una parcela y fecha', 'danger');
+                return;
+            }
+            
+            const kgPorHa = parseFloat(document.getElementById('kgPorHaCosecha').value);
+            const precioTon = parseFloat(document.getElementById('precioTonelada').value);
+            
+            if (!kgPorHa || !precioTon) {
+                mostrarMensaje('Completa los campos de rendimiento y precio', 'danger');
+                return;
+            }
+            
+            try {
+                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
+                if (!parcelaDoc.exists()) {
+                    mostrarMensaje('Parcela no encontrada', 'danger');
+                    return;
+                }
+                
+                const parcela = parcelaDoc.data();
+                
+                if (!parcela.cultivoActual) {
+                    mostrarMensaje('La parcela no tiene un cultivo activo', 'danger');
+                    return;
+                }
+                
+                const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
+                if (!siembraDoc.exists()) {
+                    mostrarMensaje('No se encontró información de siembra', 'danger');
+                    return;
+                }
+                
+                const siembra = siembraDoc.data();
+                const hectareas = parcela.hectareas;
+                
+                const kgTotales = kgPorHa * hectareas;
+                const descuento = parseFloat(document.getElementById('descuentoSilo').value) || 0;
+                const kgNetos = kgTotales * (1 - descuento / 100);
+                const toneladas = kgNetos / 1000;
+                const ingresoBruto = toneladas * precioTon;
+                
+                const costoFlete = parseFloat(document.getElementById('costoFlete').value) || 0;
+                const otrosCostos = parseFloat(document.getElementById('otrosCostosCosecha').value) || 0;
+                
+                // Costos acumulados
+                const costoSiembra = siembra.costoTotal;
+                
+                const qFum = query(
+                    collection(db, 'fumigaciones'),
+                    where('parcelaId', '==', parcelaId),
+                    where('siembraId', '==', parcela.cultivoActual)
+                );
+                const fumSnapshot = await getDocs(qFum);
+                let costoFumigaciones = 0;
+                fumSnapshot.forEach(doc => {
+                    costoFumigaciones += doc.data().costoTotal;
+                });
+                
+                const costosTotales = costoSiembra + costoFumigaciones + costoFlete + otrosCostos;
+                const ganancia = ingresoBruto - costosTotales;
+                
+                await addDoc(collection(db, 'cosechas'), {
+                    parcelaId,
+                    parcelaNombre: parcela.nombre,
+                    siembraId: parcela.cultivoActual,
+                    cultivo: siembra.cultivo,
+                    variedad: siembra.variedad,
+                    hectareas,
+                    fecha,
+                    kgPorHa,
+                    kgTotales,
+                    descuentoSilo: descuento,
+                    kgNetos,
+                    toneladas,
+                    precioTonelada: precioTon,
+                    ingresoBruto,
+                    costoFlete,
+                    otrosCostos,
+                    costoSiembra,
+                    costoFumigaciones,
+                    costosTotales,
+                    ganancia,
+                    observaciones,
+                    userId: currentUser.uid,
+                    timestamp: serverTimestamp()
+                });
+                
+                // Cerrar cultivo de la parcela
+                await updateDoc(doc(db, 'parcelas', parcelaId), {
+                    cultivoActual: null
+                });
+                
+                // Limpiar formulario
+                e.target.reset();
+                document.getElementById('infoParcelaCosecha').style.display = 'none';
+                document.getElementById('kgTotalesCosecha').value = '';
+                document.getElementById('kgNetosCosecha').value = '';
+                document.getElementById('toneladasNetas').value = '';
+                document.getElementById('ingresoBruto').value = '';
+                document.getElementById('displayIngresoBruto').textContent = '$0.00';
+                document.getElementById('displayCostoSiembra').textContent = '$0.00';
+                document.getElementById('displayCostoFumigaciones').textContent = '$0.00';
+                document.getElementById('displayCostoFlete').textContent = '$0.00';
+                document.getElementById('displayOtrosCostos').textContent = '$0.00';
+                document.getElementById('displayGanancia').textContent = '$0.00';
+                
+                await cargarParcelas();
+                await cargarHistorialCosechas();
+                await poblarSelects();
+                mostrarMensaje('✅ Cosecha registrada correctamente. El cultivo se ha cerrado.', 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al registrar cosecha: ' + error.message, 'danger');
+            }
+        };
+
+        async function cargarHistorialCosechas() {
+            try {
+                const q = query(
+                    collection(db, 'cosechas'),
+                    where('userId', '==', currentUser.uid),
+                    orderBy('timestamp', 'desc')
+                );
+                const snapshot = await getDocs(q);
+                
+                const container = document.getElementById('historialCosechas');
+                container.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    container.innerHTML = '<p>No hay cosechas registradas</p>';
+                    return;
+                }
+                
+                snapshot.forEach(docSnap => {
+                    const cosecha = docSnap.data();
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.style.borderLeft = cosecha.ganancia >= 0 ? '4px solid #28a745' : '4px solid #dc3545';
+                    
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div>
+                                <h4 style="margin-bottom: 5px;">${cosecha.parcelaNombre} - ${cosecha.cultivo} ${cosecha.variedad}</h4>
+                                <p style="color: #666;">📅 Cosecha: ${formatearFecha(cosecha.fecha)}</p>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 15px 0;">
+                            <div>
+                                <strong>📊 Rendimiento</strong><br>
+                                ${cosecha.kgPorHa.toFixed(0)} kg/ha<br>
+                                ${cosecha.toneladas.toFixed(2)} ton totales
+                            </div>
+                            <div>
+                                <strong>📉 Descuento Silo</strong><br>
+                                ${cosecha.descuentoSilo}%<br>
+                                ${cosecha.kgNetos.toFixed(0)} kg netos
+                            </div>
+                            <div>
+                                <strong>💰 Precio</strong><br>
+                                ${cosecha.precioTonelada.toFixed(2)}/ton<br>
+                                Ingreso: ${cosecha.ingresoBruto.toFixed(2)}
+                            </div>
+                        </div>
+                        ${cosecha.observaciones ? `<p><strong>📝 Observaciones:</strong> ${cosecha.observaciones}</p>` : ''}
+                        <div class="costo-box" style="margin-top: 15px;">
+                            <h4>📊 Resumen Financiero</h4>
+                            <div class="costo-item">
+                                <span>Ingreso Bruto:</span>
+                                <span>${cosecha.ingresoBruto.toFixed(2)}</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>(-) Siembra:</span>
+                                <span>${cosecha.costoSiembra.toFixed(2)}</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>(-) Fumigaciones:</span>
+                                <span>${cosecha.costoFumigaciones.toFixed(2)}</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>(-) Flete:</span>
+                                <span>${cosecha.costoFlete.toFixed(2)}</span>
+                            </div>
+                            <div class="costo-item">
+                                <span>(-) Otros:</span>
+                                <span>${cosecha.otrosCostos.toFixed(2)}</span>
+                            </div>
+                            <div class="costo-item" style="border-top: 2px solid white; margin-top: 10px; padding-top: 10px; font-size: 1.3rem;">
+                                <strong>${cosecha.ganancia >= 0 ? '✅ GANANCIA' : '❌ PÉRDIDA'}:</strong>
+                                <strong style="color: ${cosecha.ganancia >= 0 ? '#4CAF50' : '#ff4444'};">${cosecha.ganancia.toFixed(2)}</strong>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // REPORTES
+        window.generarReporte = async function() {
+            const parcelaId = document.getElementById('parcelaReporte').value;
+            const container = document.getElementById('contenidoReporte');
+            
+            if (!parcelaId) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            try {
+                const parcelaDoc = await getDoc(doc(db, 'parcelas', parcelaId));
+                if (!parcelaDoc.exists()) return;
+                
+                const parcela = parcelaDoc.data();
+                
+                let html = `
+                    <div class="card">
+                        <h3>${parcela.nombre}</h3>
+                        <p><strong>📏 Hectáreas:</strong> ${parcela.hectareas} ha</p>
+                        ${parcela.alquilada ? `<p><strong>💰 Alquiler:</strong> ${parcela.costoAlquiler}/ha por ciclo</p>` : '<p><strong>✅ Tierra Propia</strong></p>'}
+                `;
+                
+                // Cultivo actual
+                if (parcela.cultivoActual) {
+                    const siembraDoc = await getDoc(doc(db, 'siembras', parcela.cultivoActual));
+                    if (siembraDoc.exists()) {
+                        const siembra = siembraDoc.data();
+                        const diasCultivo = calcularDias(siembra.fechaGerminacion);
+                        
+                        html += `
+                            <div class="info-box" style="margin-top: 15px;">
+                                <h4>🌱 Cultivo Actual</h4>
+                                <p><strong>Cultivo:</strong> ${siembra.cultivo} - ${siembra.variedad}</p>
+                                <p><strong>Siembra:</strong> ${formatearFecha(siembra.fecha)}</p>
+                                <p><strong>Germinación:</strong> ${formatearFecha(siembra.fechaGerminacion)}</p>
+                                <p><strong>Días del cultivo:</strong> ${diasCultivo} días</p>
+                                <p><strong>Costo de siembra:</strong> ${siembra.costoTotal.toFixed(2)}</p>
+                            </div>
+                        `;
+                        
+                        // Fumigaciones del cultivo actual
+                        const qFumActual = query(
+                            collection(db, 'fumigaciones'),
+                            where('parcelaId', '==', parcelaId),
+                            where('siembraId', '==', parcela.cultivoActual),
+                            orderBy('fecha', 'desc')
+                        );
+                        const fumActualSnapshot = await getDocs(qFumActual);
+                        
+                        if (!fumActualSnapshot.empty) {
+                            let costoFumActual = 0;
+                            html += '<div class="subsection"><h4>🚜 Fumigaciones del Cultivo Actual</h4>';
+                            html += '<table style="font-size: 0.9rem;"><thead><tr><th>Fecha</th><th>Día</th><th>Productos</th><th>Costo</th></tr></thead><tbody>';
+                            
+                            fumActualSnapshot.forEach(doc => {
+                                const fum = doc.data();
+                                costoFumActual += fum.costoTotal;
+                                const prods = fum.productos.map(p => p.nombre).join(', ');
+                                html += `
+                                    <tr>
+                                        <td>${formatearFecha(fum.fecha)}</td>
+                                        <td>Día ${fum.diasCultivo}</td>
+                                        <td>${prods}</td>
+                                        <td>${fum.costoTotal.toFixed(2)}</td>
+                                    </tr>
+                                `;
+                            });
+                            
+                            html += `</tbody></table>`;
+                            html += `<p style="margin-top: 10px;"><strong>Total fumigaciones:</strong> ${costoFumActual.toFixed(2)}</p>`;
+                            html += `<p><strong>INVERSIÓN ACTUAL:</strong> ${(siembra.costoTotal + costoFumActual).toFixed(2)}</p></div>`;
+                        }
+                    }
+                } else {
+                    html += '<p style="color: #999; margin-top: 15px;">Sin cultivo activo</p>';
+                }
+                
+                html += '</div>';
+                
+                // Historial de cosechas
+                const qCosechas = query(
+                    collection(db, 'cosechas'),
+                    where('parcelaId', '==', parcelaId),
+                    orderBy('timestamp', 'desc')
+                );
+                const cosechasSnapshot = await getDocs(qCosechas);
+                
+                if (!cosechasSnapshot.empty) {
+                    html += '<h3 style="margin-top: 30px;">📊 Historial de Cosechas</h3>';
+                    
+                    let gananciaTotal = 0;
+                    let rendimientoPromedio = 0;
+                    let count = 0;
+                    
+                    cosechasSnapshot.forEach(doc => {
+                        const cosecha = doc.data();
+                        gananciaTotal += cosecha.ganancia;
+                        rendimientoPromedio += cosecha.kgPorHa;
+                        count++;
+                        
+                        const colorGanancia = cosecha.ganancia >= 0 ? '#28a745' : '#dc3545';
+                        
+                        html += `
+                            <div class="card" style="border-left: 4px solid ${colorGanancia};">
+                                <div class="card-header">
+                                    <div>
+                                        <h4 style="margin-bottom: 5px;">${cosecha.cultivo} ${cosecha.variedad}</h4>
+                                        <p style="color: #666;">📅 ${formatearFecha(cosecha.fecha)}</p>
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 10px 0;">
+                                    <div><strong>Rendimiento:</strong><br>${cosecha.kgPorHa.toFixed(0)} kg/ha</div>
+                                    <div><strong>Producción:</strong><br>${cosecha.toneladas.toFixed(2)} ton</div>
+                                    <div><strong>Precio:</strong><br>${cosecha.precioTonelada.toFixed(2)}/ton</div>
+                                    <div><strong>Ingresos:</strong><br>${cosecha.ingresoBruto.toFixed(2)}</div>
+                                    <div><strong>Costos:</strong><br>${cosecha.costosTotales.toFixed(2)}</div>
+                                    <div style="color: ${colorGanancia};"><strong>${cosecha.ganancia >= 0 ? 'Ganancia' : 'Pérdida'}:</strong><br>${cosecha.ganancia.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    rendimientoPromedio = rendimientoPromedio / count;
+                    
+                    html += `
+                        <div class="costo-total" style="margin-top: 20px;">
+                            <h4 style="margin-bottom: 15px;">📈 Resumen Histórico</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; text-align: center;">
+                                <div>
+                                    <div style="font-size: 0.9rem;">Cosechas Totales</div>
+                                    <div style="font-size: 1.8rem; font-weight: bold;">${count}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem;">Rendimiento Promedio</div>
+                                    <div style="font-size: 1.8rem; font-weight: bold;">${rendimientoPromedio.toFixed(0)} kg/ha</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem;">Ganancia/Pérdida Total</div>
+                                    <div style="font-size: 1.8rem; font-weight: bold; color: ${gananciaTotal >= 0 ? '#4CAF50' : '#ff4444'};">${gananciaTotal.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += '<p style="margin-top: 30px;">No hay cosechas registradas para esta parcela</p>';
+                }
+                
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = '<p style="color: red;">Error al generar el reporte</p>';
+            }
+        };
+
+        // POBLAR SELECTS
+        async function poblarSelects() {
+            try {
+                const parcelasSnapshot = await getDocs(query(
+                    collection(db, 'parcelas'),
+                    where('userId', '==', currentUser.uid)
+                ));
+                
+                const productosSnapshot = await getDocs(query(
+                    collection(db, 'productos'),
+                    where('userId', '==', currentUser.uid)
+                ));
+                
+                // Parcelas para siembra
+                const parcelaSiembraSelect = document.getElementById('parcelaSiembra');
+                parcelaSiembraSelect.innerHTML = '<option value="">Seleccionar parcela</option>';
+                
+                parcelasSnapshot.forEach(docSnap => {
+                    const p = docSnap.data();
+                    const disabled = p.cultivoActual ? ' (tiene cultivo activo)' : '';
+                    parcelaSiembraSelect.innerHTML += `<option value="${docSnap.id}" ${p.cultivoActual ? 'disabled' : ''}>${p.nombre} (${p.hectareas} ha)${disabled}</option>`;
+                });
+                
+                // Parcelas para fumigación (solo con cultivo activo)
+                const parcelaFumSelect = document.getElementById('parcelaFumigacion');
+                parcelaFumSelect.innerHTML = '<option value="">Seleccionar parcela</option>';
+                
+                parcelasSnapshot.forEach(docSnap => {
+                    const p = docSnap.data();
+                    if (p.cultivoActual) {
+                        parcelaFumSelect.innerHTML += `<option value="${docSnap.id}">${p.nombre} (${p.hectareas} ha)</option>`;
+                    }
+                });
+                
+                // Parcelas para cosecha (solo con cultivo activo)
+                const parcelaCosechaSelect = document.getElementById('parcelaCosecha');
+                parcelaCosechaSelect.innerHTML = '<option value="">Seleccionar parcela</option>';
+                
+                parcelasSnapshot.forEach(docSnap => {
+                    const p = docSnap.data();
+                    if (p.cultivoActual) {
+                        parcelaCosechaSelect.innerHTML += `<option value="${docSnap.id}">${p.nombre} (${p.hectareas} ha)</option>`;
+                    }
+                });
+                
+                // Filtro parcela fumigación
+                const filtroFumSelect = document.getElementById('filtroParcelaFumigacion');
+                filtroFumSelect.innerHTML = '<option value="">Todas las parcelas</option>';
+                
+                parcelasSnapshot.forEach(docSnap => {
+                    const p = docSnap.data();
+                    filtroFumSelect.innerHTML += `<option value="${docSnap.id}">${p.nombre}</option>`;
+                });
+                
+                // Parcelas para reportes
+                const reporteSelect = document.getElementById('parcelaReporte');
+                reporteSelect.innerHTML = '<option value="">Seleccionar parcela</option>';
+                
+                parcelasSnapshot.forEach(docSnap => {
+                    const p = docSnap.data();
+                    reporteSelect.innerHTML += `<option value="${docSnap.id}">${p.nombre}</option>`;
+                });
+                
+                // Productos para fumigación
+                const productoFumSelect = document.getElementById('productoFumigacion');
+                productoFumSelect.innerHTML = '<option value="">Seleccionar producto</option>';
+                
+                productosSnapshot.forEach(docSnap => {
+                    const p = docSnap.data();
+                    productoFumSelect.innerHTML += `<option value="${docSnap.id}" data-precio="${p.precio}" data-unidad="${p.unidad}">${p.nombre} - ${p.precio}/${p.unidad}</option>`;
+                });
+            } catch (error) {
+                console.error('Error al poblar selects:', error);
+            }
+        }
+
+        // UTILIDADES
+        function calcularDias(fechaInicio) {
+            if (!fechaInicio) return 0;
+            const fecha1 = new Date(fechaInicio + 'T00:00:00');
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            return Math.floor((hoy - fecha1) / (1000 * 60 * 60 * 24));
+        }
+
+        function calcularDiasEntre(fechaInicio, fechaFin) {
+            if (!fechaInicio || !fechaFin) return 0;
+            const fecha1 = new Date(fechaInicio + 'T00:00:00');
+            const fecha2 = new Date(fechaFin + 'T00:00:00');
+            return Math.floor((fecha2 - fecha1) / (1000 * 60 * 60 * 24));
+        }
+
+        function formatearFecha(fecha) {
+            if (!fecha) return 'N/A';
+            const f = new Date(fecha + 'T00:00:00');
+            return f.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        function mostrarMensaje(mensaje, tipo) {
+            const existente = document.querySelector('.alert');
+            if (existente) existente.remove();
+            
+            const alerta = document.createElement('div');
+            alerta.className = `alert alert-${tipo}`;
+            alerta.textContent = mensaje;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alerta, container.firstChild);
+            
+            setTimeout(() => alerta.remove(), 5000);
+        }
+    </script>
+</body>
+</html>
