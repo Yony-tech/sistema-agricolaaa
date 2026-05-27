@@ -752,6 +752,99 @@
         </div>
     </div>
 
+    <!-- MODAL EDITAR SIEMBRA -->
+    <div id="modalEditarSiembra" class="modal-overlay">
+        <div class="modal">
+            <h3>✏️ Editar Siembra</h3>
+            <input type="hidden" id="editSiembraId">
+            <input type="hidden" id="editSiembraHectareas">
+            <div class="form-grid">
+                <div class="form-group"><label>Fecha *</label><input type="date" id="editSiembraFecha"></div>
+                <div class="form-group"><label>Cultivo *</label><input type="text" id="editSiembraCultivo"></div>
+                <div class="form-group"><label>Variedad *</label><input type="text" id="editSiembraVariedad"></div>
+                <div class="form-group"><label>Días Germinación</label><input type="number" id="editSiembraDias" min="1" value="7"></div>
+            </div>
+            <div class="subsection">
+                <h4>🌾 Semilla</h4>
+                <div class="form-grid">
+                    <div class="form-group"><label>Tipo</label><input type="text" id="editSiembraTipoSemilla"></div>
+                    <div class="form-group"><label>Marca</label><input type="text" id="editSiembraMarca"></div>
+                    <div class="form-group"><label>Kg/ha</label><input type="number" id="editSiembraKgHa" step="0.01" min="0" oninput="recalcularSiembra()"></div>
+                    <div class="form-group"><label>Precio/kg ($)</label><input type="number" id="editSiembraPrecioKg" step="0.01" min="0" oninput="recalcularSiembra()"></div>
+                </div>
+            </div>
+            <div class="subsection">
+                <h4>💊 Fertilizantes</h4>
+                <div id="editFertilizantesList"></div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Nombre</label><input type="text" id="editNombreFert" placeholder="Ej: Fosfato"></div>
+                    <div class="form-group"><label>Formulación</label><input type="text" id="editFormulacionFert" placeholder="Ej: 18-46-0"></div>
+                    <div class="form-group"><label>Kg/ha</label><input type="number" id="editKgHaFert" step="0.01" min="0"></div>
+                    <div class="form-group"><label>Precio/kg ($)</label><input type="number" id="editPrecioFert" step="0.01" min="0"></div>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="agregarFertilizanteEdit()">➕ Agregar</button>
+            </div>
+            <div class="subsection">
+                <h4>💉 Tratamientos</h4>
+                <div id="editTratamientosList"></div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Producto</label><input type="text" id="editProductoTrat" placeholder="Ej: Cruiser"></div>
+                    <div class="form-group"><label>Dosis</label><input type="text" id="editDosisTrat"></div>
+                    <div class="form-group"><label>Costo/ha ($)</label><input type="number" id="editCostoTrat" step="0.01" min="0"></div>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="agregarTratamientoEdit()">➕ Agregar</button>
+            </div>
+            <div class="costo-box">
+                <h4>💰 Resumen</h4>
+                <div class="costo-item"><span>Semilla:</span><span id="editResumenSemilla">$0.00</span></div>
+                <div class="costo-item"><span>Fertilizantes:</span><span id="editResumenFert">$0.00</span></div>
+                <div class="costo-item"><span>Tratamientos:</span><span id="editResumenTrat">$0.00</span></div>
+                <div class="costo-item"><span>Alquiler:</span><span id="editResumenAlquiler">$0.00</span></div>
+                <div class="costo-item" style="border-top:2px solid white;margin-top:10px;padding-top:10px;font-size:1.2rem;"><strong>COSTO TOTAL:</strong><strong id="editResumenTotal">$0.00</strong></div>
+            </div>
+            <div class="form-group"><label>Observaciones</label><textarea id="editSiembraObs" rows="3"></textarea></div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="guardarEdicionSiembra()">💾 Guardar</button>
+                <button class="btn btn-secondary" onclick="cerrarModal('modalEditarSiembra')">❌ Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR FUMIGACIÓN COMPLETO -->
+    <div id="modalEditarFumigacionCompleto" class="modal-overlay">
+        <div class="modal">
+            <h3>✏️ Editar Fumigación</h3>
+            <input type="hidden" id="editFumIdCompleto">
+            <input type="hidden" id="editFumHectareas">
+            <div class="form-grid">
+                <div class="form-group"><label>Fecha *</label><input type="date" id="editFumFechaCompleto"></div>
+                <div class="form-group"><label>Costo Personal ($)</label><input type="number" id="editFumPersonalCompleto" step="0.01" min="0" value="0" oninput="recalcularFumigacion()"></div>
+            </div>
+            <div class="subsection">
+                <h4>💊 Productos Aplicados</h4>
+                <div id="editProductosFumList"></div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Nombre</label><input type="text" id="editFumProdNombre" placeholder="Ej: Glifosato"></div>
+                    <div class="form-group"><label>Cantidad/ha</label><input type="number" id="editFumProdCantidad" step="0.01" min="0.001" placeholder="Ej: 2.5"></div>
+                    <div class="form-group"><label>Precio/unidad ($)</label><input type="number" id="editFumProdPrecio" step="0.01" min="0" placeholder="Ej: 15.50"></div>
+                    <div class="form-group"><label>Unidad</label><select id="editFumProdUnidad"><option value="L">Litros</option><option value="kg">Kilogramos</option><option value="ml">Mililitros</option><option value="gr">Gramos</option></select></div>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="agregarProductoFumEdit()">➕ Agregar Producto</button>
+            </div>
+            <div class="costo-box">
+                <h4>💰 Resumen</h4>
+                <div class="costo-item"><span>Productos:</span><span id="editFumCostoProductos">$0.00</span></div>
+                <div class="costo-item"><span>Personal:</span><span id="editFumCostoPersonal">$0.00</span></div>
+                <div class="costo-item" style="border-top:2px solid white;margin-top:10px;padding-top:10px;font-size:1.2rem;"><strong>COSTO TOTAL:</strong><strong id="editFumCostoTotal">$0.00</strong></div>
+            </div>
+            <div class="form-group"><label>Observaciones</label><textarea id="editFumObsCompleto" rows="3"></textarea></div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="guardarEdicionFumigacionCompleto()">💾 Guardar</button>
+                <button class="btn btn-secondary" onclick="cerrarModal('modalEditarFumigacionCompleto')">❌ Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL EDITAR FUMIGACIÓN -->
     <div id="modalEditarFumigacion" class="modal-overlay">
         <div class="modal">
@@ -1112,7 +1205,7 @@
 
         function actualizarListaTratamientos() {
             const lista = document.getElementById('tratamientosList');
-  lista.innerHTML = '';
+            lista.innerHTML = '';
             tratamientosTemp.forEach((trat, index) => {
                 const item = document.createElement('div');
                 item.className = 'producto-item';
@@ -1276,6 +1369,7 @@
                                 <h4 style="margin-bottom: 5px;">${siembra.parcelaNombre} - ${siembra.cultivo} ${siembra.variedad}</h4>
                                 <p style="color: #666;">📅 Siembra: ${formatearFecha(siembra.fecha)} | Germinación: ${formatearFecha(siembra.fechaGerminacion)}</p>
                             </div>
+                            <div><button class="btn btn-info" onclick="abrirEditarSiembra('${docSnap.id}')" style="padding:6px 14px;">✏️ Editar</button></div>
                         </div>
                         <div style="margin-top: 10px;">
                             <strong>🌾 Semilla:</strong> ${siembra.semilla.tipo || 'N/A'} ${siembra.semilla.marca ? '- ' + siembra.semilla.marca : ''} (${siembra.semilla.kgPorHa} kg/ha)<br>
@@ -1522,7 +1616,7 @@
                                 <p style="color: #666;">📅 ${formatearFecha(fum.fecha)} | Día ${fum.diasCultivo} del cultivo</p>
                             </div>
                             <div>
-                                <button class="btn btn-info" onclick="abrirEditarFumigacion('${docSnap.id}', '${fum.fecha}', ${fum.costoPersonal || 0}, \`${(fum.observaciones || '').replace(/`/g,"'")}\`)" style="padding: 6px 14px;">✏️ Editar</button>
+                                <button class="btn btn-info" onclick="abrirEditarFumigacionCompleto('${docSnap.id}')" style="padding: 6px 14px;">✏️ Editar</button>
                                 <button class="btn btn-danger" onclick="eliminarFumigacion('${docSnap.id}')" style="padding: 6px 14px;">🗑️</button>
                             </div>
                         </div>
@@ -1923,6 +2017,215 @@
             } catch (error) {
                 mostrarMensaje('❌ Error al guardar cambios: ' + error.message, 'danger');
             }
+        };
+
+        // ===== EDITAR SIEMBRA =====
+        let editFertilizantesTemp = [], editTratamientosTemp = [], editProductosFumTemp = [];
+        let editSiembraAlquiler = 0;
+
+        window.abrirEditarSiembra = async function(id) {
+            try {
+                const sd = await getDoc(doc(db, 'siembras', id));
+                if (!sd.exists()) { mostrarMensaje('No encontrado', 'danger'); return; }
+                const s = sd.data();
+                const parcela = parcelasCache.find(p => p.id === s.parcelaId);
+                editSiembraAlquiler = parcela && parcela.alquilada ? parcela.costoAlquiler * s.hectareas : 0;
+                document.getElementById('editSiembraId').value = id;
+                document.getElementById('editSiembraHectareas').value = s.hectareas;
+                document.getElementById('editSiembraFecha').value = s.fecha;
+                document.getElementById('editSiembraCultivo').value = s.cultivo;
+                document.getElementById('editSiembraVariedad').value = s.variedad;
+                document.getElementById('editSiembraDias').value = s.diasGerminacion || 7;
+                document.getElementById('editSiembraTipoSemilla').value = s.semilla?.tipo || '';
+                document.getElementById('editSiembraMarca').value = s.semilla?.marca || '';
+                document.getElementById('editSiembraKgHa').value = s.semilla?.kgPorHa || 0;
+                document.getElementById('editSiembraPrecioKg').value = s.semilla?.precioKg || 0;
+                document.getElementById('editSiembraObs').value = s.observaciones || '';
+                editFertilizantesTemp = s.fertilizantes ? [...s.fertilizantes] : [];
+                editTratamientosTemp = s.tratamientos ? [...s.tratamientos] : [];
+                renderEditFerts(); renderEditTrats();
+                recalcularSiembra();
+                document.getElementById('modalEditarSiembra').classList.add('active');
+            } catch(e) { mostrarMensaje('❌ Error: ' + e.message, 'danger'); }
+        };
+
+        function renderEditFerts() {
+            const el = document.getElementById('editFertilizantesList');
+            el.innerHTML = '';
+            editFertilizantesTemp.forEach((f, i) => {
+                const d = document.createElement('div');
+                d.className = 'producto-item';
+                d.innerHTML = `<div><strong>${f.nombre}</strong> ${f.formulacion ? '- '+f.formulacion : ''}<br><small>${f.kgPorHa} kg/ha × $${f.precio}/kg = $${(f.kgPorHa*f.precio).toFixed(2)}/ha</small></div><button type="button" class="btn btn-danger" onclick="eliminarFertEdit(${i})" style="padding:5px 15px;">🗑️</button>`;
+                el.appendChild(d);
+            });
+            recalcularSiembra();
+        }
+
+        function renderEditTrats() {
+            const el = document.getElementById('editTratamientosList');
+            el.innerHTML = '';
+            editTratamientosTemp.forEach((t, i) => {
+                const d = document.createElement('div');
+                d.className = 'producto-item';
+                d.innerHTML = `<div><strong>${t.producto}</strong><br><small>Dosis: ${t.dosis||'N/A'} — $${t.costo.toFixed(2)}/ha</small></div><button type="button" class="btn btn-danger" onclick="eliminarTratEdit(${i})" style="padding:5px 15px;">🗑️</button>`;
+                el.appendChild(d);
+            });
+            recalcularSiembra();
+        }
+
+        window.agregarFertilizanteEdit = function() {
+            const n=document.getElementById('editNombreFert').value.trim();
+            const f=document.getElementById('editFormulacionFert').value.trim();
+            const k=parseFloat(document.getElementById('editKgHaFert').value);
+            const p=parseFloat(document.getElementById('editPrecioFert').value);
+            if(!n||!k||!p){alert('Completá todos los campos');return;}
+            editFertilizantesTemp.push({nombre:n,formulacion:f,kgPorHa:k,precio:p});
+            renderEditFerts();
+            document.getElementById('editNombreFert').value='';
+            document.getElementById('editFormulacionFert').value='';
+            document.getElementById('editKgHaFert').value='';
+            document.getElementById('editPrecioFert').value='';
+        };
+
+        window.eliminarFertEdit = function(i) { editFertilizantesTemp.splice(i,1); renderEditFerts(); };
+
+        window.agregarTratamientoEdit = function() {
+            const p=document.getElementById('editProductoTrat').value.trim();
+            const d=document.getElementById('editDosisTrat').value.trim();
+            const c=parseFloat(document.getElementById('editCostoTrat').value);
+            if(!p||!c){alert('Completá los campos');return;}
+            editTratamientosTemp.push({producto:p,dosis:d,costo:c});
+            renderEditTrats();
+            document.getElementById('editProductoTrat').value='';
+            document.getElementById('editDosisTrat').value='';
+            document.getElementById('editCostoTrat').value='';
+        };
+
+        window.eliminarTratEdit = function(i) { editTratamientosTemp.splice(i,1); renderEditTrats(); };
+
+        window.recalcularSiembra = function() {
+            const ha=parseFloat(document.getElementById('editSiembraHectareas').value)||0;
+            const kgS=parseFloat(document.getElementById('editSiembraKgHa').value)||0;
+            const pS=parseFloat(document.getElementById('editSiembraPrecioKg').value)||0;
+            const cSem=kgS*pS*ha;
+            let cFert=0; editFertilizantesTemp.forEach(f=>cFert+=f.kgPorHa*f.precio*ha);
+            let cTrat=0; editTratamientosTemp.forEach(t=>cTrat+=t.costo*ha);
+            const total=cSem+cFert+cTrat+editSiembraAlquiler;
+            document.getElementById('editResumenSemilla').textContent=`$${cSem.toFixed(2)}`;
+            document.getElementById('editResumenFert').textContent=`$${cFert.toFixed(2)}`;
+            document.getElementById('editResumenTrat').textContent=`$${cTrat.toFixed(2)}`;
+            document.getElementById('editResumenAlquiler').textContent=`$${editSiembraAlquiler.toFixed(2)}`;
+            document.getElementById('editResumenTotal').textContent=`$${total.toFixed(2)}`;
+        };
+
+        window.guardarEdicionSiembra = async function() {
+            const id=document.getElementById('editSiembraId').value;
+            const ha=parseFloat(document.getElementById('editSiembraHectareas').value);
+            const fecha=document.getElementById('editSiembraFecha').value;
+            const cultivo=document.getElementById('editSiembraCultivo').value.trim();
+            const variedad=document.getElementById('editSiembraVariedad').value.trim();
+            const dias=parseInt(document.getElementById('editSiembraDias').value);
+            if(!fecha||!cultivo||!variedad){alert('Completá los campos obligatorios');return;}
+            const fg=new Date(fecha+'T00:00:00');
+            fg.setDate(fg.getDate()+dias);
+            const fechaGerminacion=fg.toISOString().split('T')[0];
+            const kgS=parseFloat(document.getElementById('editSiembraKgHa').value)||0;
+            const pS=parseFloat(document.getElementById('editSiembraPrecioKg').value)||0;
+            const semilla={tipo:document.getElementById('editSiembraTipoSemilla').value.trim(),marca:document.getElementById('editSiembraMarca').value.trim(),kgPorHa:kgS,precioKg:pS,costoTotal:kgS*pS*ha};
+            let cFert=0; editFertilizantesTemp.forEach(f=>cFert+=f.kgPorHa*f.precio*ha);
+            let cTrat=0; editTratamientosTemp.forEach(t=>cTrat+=t.costo*ha);
+            const costoTotal=semilla.costoTotal+cFert+cTrat+editSiembraAlquiler;
+            try {
+                await updateDoc(doc(db,'siembras',id),{
+                    fecha,fechaGerminacion,cultivo,variedad,diasGerminacion:dias,
+                    semilla,fertilizantes:[...editFertilizantesTemp],tratamientos:[...editTratamientosTemp],
+                    costoAlquiler:editSiembraAlquiler,costoPorHa:costoTotal/ha,costoTotal,
+                    observaciones:document.getElementById('editSiembraObs').value.trim()
+                });
+                cerrarModal('modalEditarSiembra');
+                await cargarHistorialSiembras(); await cargarParcelas();
+                mostrarMensaje('✅ Siembra actualizada','success');
+            } catch(e){mostrarMensaje('❌ Error: '+e.message,'danger');}
+        };
+
+        // ===== EDITAR FUMIGACIÓN COMPLETO =====
+        window.abrirEditarFumigacionCompleto = async function(id) {
+            try{
+                const fd=await getDoc(doc(db,'fumigaciones',id));
+                if(!fd.exists()){mostrarMensaje('No encontrado','danger');return;}
+                const fum=fd.data();
+                document.getElementById('editFumIdCompleto').value=id;
+                document.getElementById('editFumHectareas').value=fum.hectareas;
+                document.getElementById('editFumFechaCompleto').value=fum.fecha;
+                document.getElementById('editFumPersonalCompleto').value=fum.costoPersonal||0;
+                document.getElementById('editFumObsCompleto').value=fum.observaciones||'';
+                editProductosFumTemp=fum.productos?[...fum.productos]:[];
+                renderEditProdsFum();
+                recalcularFumigacion();
+                document.getElementById('modalEditarFumigacionCompleto').classList.add('active');
+            }catch(e){mostrarMensaje('❌ Error: '+e.message,'danger');}
+        };
+
+        function renderEditProdsFum() {
+            const ha=parseFloat(document.getElementById('editFumHectareas').value)||1;
+            const el=document.getElementById('editProductosFumList');
+            if(editProductosFumTemp.length===0){el.innerHTML='<p style="color:#666;">No hay productos</p>';recalcularFumigacion();return;}
+            el.innerHTML='';
+            editProductosFumTemp.forEach((p,i)=>{
+                const ct=p.cantidad*ha;
+                const d=document.createElement('div');
+                d.className='producto-item';
+                d.innerHTML=`<div><strong>${p.nombre}</strong><br><small>${p.cantidad} ${p.unidad}/ha × ${ha} ha = ${ct.toFixed(2)} ${p.unidad} — $${(ct*p.precio).toFixed(2)}</small></div><button type="button" class="btn btn-danger" onclick="eliminarProdFumEdit(${i})" style="padding:5px 15px;">🗑️</button>`;
+                el.appendChild(d);
+            });
+            recalcularFumigacion();
+        }
+
+        window.agregarProductoFumEdit = function() {
+            const n=document.getElementById('editFumProdNombre').value.trim();
+            const c=parseFloat(document.getElementById('editFumProdCantidad').value);
+            const p=parseFloat(document.getElementById('editFumProdPrecio').value);
+            const u=document.getElementById('editFumProdUnidad').value;
+            if(!n||!c||!p){alert('Completá todos los campos');return;}
+            editProductosFumTemp.push({nombre:n,cantidad:c,precio:p,unidad:u});
+            renderEditProdsFum();
+            document.getElementById('editFumProdNombre').value='';
+            document.getElementById('editFumProdCantidad').value='';
+            document.getElementById('editFumProdPrecio').value='';
+        };
+
+        window.eliminarProdFumEdit = function(i){editProductosFumTemp.splice(i,1);renderEditProdsFum();};
+
+        window.recalcularFumigacion = function() {
+            const ha=parseFloat(document.getElementById('editFumHectareas').value)||1;
+            const personal=parseFloat(document.getElementById('editFumPersonalCompleto').value)||0;
+            let cProd=0;editProductosFumTemp.forEach(p=>cProd+=p.cantidad*ha*p.precio);
+            const total=cProd+personal;
+            document.getElementById('editFumCostoProductos').textContent=`$${cProd.toFixed(2)}`;
+            document.getElementById('editFumCostoPersonal').textContent=`$${personal.toFixed(2)}`;
+            document.getElementById('editFumCostoTotal').textContent=`$${total.toFixed(2)}`;
+        };
+
+        window.guardarEdicionFumigacionCompleto = async function() {
+            const id=document.getElementById('editFumIdCompleto').value;
+            const ha=parseFloat(document.getElementById('editFumHectareas').value);
+            const fecha=document.getElementById('editFumFechaCompleto').value;
+            const personal=parseFloat(document.getElementById('editFumPersonalCompleto').value)||0;
+            if(!fecha){alert('La fecha es obligatoria');return;}
+            if(editProductosFumTemp.length===0){alert('Agregá al menos un producto');return;}
+            let cProd=0;editProductosFumTemp.forEach(p=>cProd+=p.cantidad*ha*p.precio);
+            const total=cProd+personal;
+            try{
+                await updateDoc(doc(db,'fumigaciones',id),{
+                    fecha,costoPersonal:personal,costoProductos:cProd,
+                    costoPorHa:total/ha,costoTotal:total,
+                    productos:[...editProductosFumTemp],
+                    observaciones:document.getElementById('editFumObsCompleto').value.trim()
+                });
+                cerrarModal('modalEditarFumigacionCompleto');
+                await cargarHistorialFumigacion();
+                mostrarMensaje('✅ Fumigación actualizada','success');
+            }catch(e){mostrarMensaje('❌ Error: '+e.message,'danger');}
         };
 
         // ===================== REPORTES =====================
